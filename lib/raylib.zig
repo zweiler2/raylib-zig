@@ -1437,19 +1437,64 @@ pub const Shader = extern struct {
     id: c_uint,
     locs: [*c]c_int,
 
+    /// Load shader from files and bind default locations
+    pub fn loadFromFile(vsFileName: ?[:0]const u8, fsFileName: ?[:0]const u8) RaylibError!Shader {
+        return rl.loadShader(vsFileName, fsFileName);
+    }
+
+    /// Load shader from code strings and bind default locations
+    pub fn loadFromMemory(vsCode: ?[:0]const u8, fsCode: ?[:0]const u8) RaylibError!Shader {
+        return rl.loadShaderFromMemory(vsCode, fsCode);
+    }
+
     /// Begin custom shader drawing
     pub fn activate(self: Shader) void {
-        rl.beginShaderMode(self);
+        return rl.beginShaderMode(self);
     }
 
     /// End custom shader drawing (use default shader)
     pub fn deactivate(_: Shader) void {
-        rl.endShaderMode();
+        return rl.endShaderMode();
+    }
+
+    /// Get shader uniform location
+    pub fn getLocation(self: Shader, uniformName: [:0]const u8) i32 {
+        return rl.getShaderLocation(self, uniformName);
+    }
+
+    /// Get shader attribute location
+    pub fn getLocationAttrib(self: Shader, attribName: [:0]const u8) i32 {
+        return rl.getShaderLocationAttrib(self, attribName);
+    }
+
+    /// Set shader uniform value
+    pub fn setValue(self: Shader, locIndex: i32, value: *const anyopaque, uniformType: ShaderUniformDataType) void {
+        return rl.setShaderValue(self, locIndex, value, uniformType);
+    }
+
+    /// Set shader uniform value vector
+    pub fn setValueV(self: Shader, locIndex: i32, value: *const anyopaque, uniformType: ShaderUniformDataType, count: i32) void {
+        return rl.setShaderValueV(self, locIndex, value, uniformType, count);
+    }
+
+    /// Set shader uniform value (matrix 4x4)
+    pub fn setValueMatrix(self: Shader, locIndex: i32, mat: Matrix) void {
+        return rl.setShaderValueMatrix(self, locIndex, mat);
+    }
+
+    /// Set shader uniform value and bind the texture (sampler2d)
+    pub fn setValueTexture(self: Shader, locIndex: i32, texture: Texture2D) void {
+        return rl.setShaderValueTexture(self, locIndex, texture);
     }
 
     /// Unload shader from GPU memory (VRAM)
     pub fn unload(self: Shader) void {
-        rl.unloadShader(self);
+        return rl.unloadShader(self);
+    }
+
+    /// Check if a shader is valid (loaded on GPU)
+    pub fn isValid(self: Shader) bool {
+        return rl.isShaderValid(self);
     }
 };
 
