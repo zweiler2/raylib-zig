@@ -1464,9 +1464,29 @@ pub const Material = extern struct {
     maps: [*c]MaterialMap,
     params: [4]f32,
 
+    /// Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
+    pub fn loadDefault() RaylibError!Material {
+        return rl.loadMaterialDefault();
+    }
+
+    /// Load materials from model file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError![]Material {
+        return rl.loadMaterials(fileName);
+    }
+
     /// Unload material from GPU memory (VRAM)
     pub fn unload(self: Material) void {
-        rl.unloadMaterial(self);
+        return rl.unloadMaterial(self);
+    }
+
+    /// Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
+    pub fn setTexture(self: *Material, mapType: MaterialMapIndex, texture: Texture2D) void {
+        return rl.setMaterialTexture(self, mapType, texture);
+    }
+
+    /// Check if a material is valid (shader assigned, map textures loaded in GPU)
+    pub fn isValid(self: Material) bool {
+        return rl.isMaterialValid(self);
     }
 };
 
