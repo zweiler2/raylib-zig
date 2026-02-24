@@ -1417,19 +1417,104 @@ pub const Mesh = extern struct {
     vaoId: c_int,
     vboId: [*c]c_int,
 
+    /// Generate polygonal mesh
+    pub fn genPoly(sides: i32, radius: f32) Mesh {
+        return rl.genMeshPoly(sides, radius);
+    }
+
+    /// Generate plane mesh (with subdivisions)
+    pub fn genPlane(width: f32, length: f32, resX: i32, resZ: i32) Mesh {
+        return rl.genMeshPlane(width, length, resX, resZ);
+    }
+
+    /// Generate cuboid mesh
+    pub fn genCube(width: f32, height: f32, length: f32) Mesh {
+        return rl.genMeshCube(width, height, length);
+    }
+
+    /// Generate sphere mesh (standard sphere)
+    pub fn genSphere(radius: f32, rings: i32, slices: i32) Mesh {
+        return rl.genMeshSphere(radius, rings, slices);
+    }
+
+    /// Generate half-sphere mesh (no bottom cap)
+    pub fn genHemiSphere(radius: f32, rings: i32, slices: i32) Mesh {
+        return rl.genMeshHemiSphere(radius, rings, slices);
+    }
+
+    /// Generate cylinder mesh
+    pub fn genCylinder(radius: f32, height: f32, slices: i32) Mesh {
+        return rl.genMeshCylinder(radius, height, slices);
+    }
+
+    /// Generate cone/pyramid mesh
+    pub fn genCone(radius: f32, height: f32, slices: i32) Mesh {
+        return rl.genMeshCone(radius, height, slices);
+    }
+
+    /// Generate torus mesh
+    pub fn genTorus(radius: f32, size: f32, radSeg: i32, sides: i32) Mesh {
+        return rl.genMeshTorus(radius, size, radSeg, sides);
+    }
+
+    /// Generate trefoil knot mesh
+    pub fn genKnot(radius: f32, size: f32, radSeg: i32, sides: i32) Mesh {
+        return rl.genMeshKnot(radius, size, radSeg, sides);
+    }
+
+    /// Generate heightmap mesh from image data
+    pub fn genHeightmap(heightmap: Image, size: Vector3) Mesh {
+        return rl.genMeshHeightmap(heightmap, size);
+    }
+
+    /// Generate cubes-based map mesh from image data
+    pub fn genCubicmap(cubicmap: Image, cubeSize: Vector3) Mesh {
+        return rl.genMeshCubicmap(cubicmap, cubeSize);
+    }
+
+    /// Export mesh data to file, returns true on success
+    pub fn exportToFile(self: Mesh, fileName: [:0]const u8) bool {
+        return rl.exportMesh(self, fileName);
+    }
+
+    /// Export mesh as code file (.h) defining multiple arrays of vertex attributes
+    pub fn exportToFileAsCode(self: Mesh, fileName: [:0]const u8) bool {
+        return rl.exportMeshAsCode(self, fileName);
+    }
+
     /// Draw a 3d mesh with material and transform
     pub fn draw(self: Mesh, material: Material, transform: Matrix) void {
-        rl.drawMesh(self, material, transform);
+        return rl.drawMesh(self, material, transform);
     }
 
     /// Draw multiple mesh instances with material and different transforms
     pub fn drawInstanced(self: Mesh, material: Material, transforms: []const Matrix) void {
-        rl.drawMeshInstanced(self, material, transforms);
+        return rl.drawMeshInstanced(self, material, transforms);
+    }
+
+    /// Upload mesh vertex data in GPU and provide VAO/VBO ids
+    pub fn upload(self: *Mesh, dynamic: bool) void {
+        return rl.uploadMesh(self, dynamic);
+    }
+
+    /// Update mesh vertex data in GPU for a specific buffer index
+    pub fn updateBuffer(self: Mesh, index: i32, data: *const anyopaque, dataSize: i32, offset: i32) void {
+        return rl.updateMeshBuffer(self, index, data, dataSize, offset);
+    }
+
+    /// Compute mesh tangents
+    pub fn genTangents(self: *Mesh) void {
+        return rl.genMeshTangents(self);
+    }
+
+    /// Compute mesh bounding box limits
+    pub fn getBoundingBox(self: Mesh) BoundingBox {
+        return rl.getMeshBoundingBox(self);
     }
 
     /// Unload mesh data from CPU and GPU
     pub fn unload(self: Mesh) void {
-        rl.unloadMesh(self);
+        return rl.unloadMesh(self);
     }
 };
 
