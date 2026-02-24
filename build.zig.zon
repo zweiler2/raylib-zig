@@ -4,12 +4,12 @@
     .fingerprint = 0xc4cfa8c610114f28,
     .dependencies = .{
         .raylib = .{
-            .url = "git+https://github.com/raysan5/raylib#9f831428e6be0eba8762a154e3e9139d4f071970",
-            .hash = "raylib-5.6.0-dev-whq8uL592gQ782dF95oci4S61qrNVYK3MhpUpNwFgZ1J",
+            .url = "git+https://github.com/zweiler2/raylib#57836353f9c04bb30079ff26f37fd756ece9cc61",
+            .hash = "raylib-5.6.0-dev-whq8uJZUIwV6r0VvYGfPJ-vRGYNX3PQghwMuW_Ks-3uV",
         },
         .raygui = .{
-            .url = "git+https://github.com/raysan5/raygui#9cdfec460b43a17264af3c181c46f62bf107ac17",
-            .hash = "N-V-__8AALUbbwDKkSH4nbf3Ml_dTWo9qbELvle5i9eQZMuo",
+            .url = "git+https://github.com/raysan5/raygui#5788707b6b7000343c14653b1ad3b971ca0597e4",
+            .hash = "N-V-__8AAE8mbwAr0dUNnkehG8F755jfdhFU18XkWHPLn3cw",
         },
         .emsdk = .{
             .url = "git+https://github.com/emscripten-core/emsdk#4.0.9",
