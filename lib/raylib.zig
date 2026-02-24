@@ -1610,9 +1610,49 @@ pub const Wave = extern struct {
     channels: c_uint,
     data: *anyopaque,
 
+    /// Load wave data from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Wave {
+        return rl.loadWave(fileName);
+    }
+
+    /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+    pub fn loadFromMemory(fileType: [:0]const u8, fileData: []const u8) RaylibError!Wave {
+        return rl.loadWaveFromMemory(fileType, fileData);
+    }
+
+    /// Export wave data to file, returns true on success
+    pub fn exportToFile(self: Wave, fileName: [:0]const u8) bool {
+        return rl.exportWave(self, fileName);
+    }
+
+    /// Export wave sample data to code (.h), returns true on success
+    pub fn exportToFileAsCode(self: Wave, fileName: [:0]const u8) bool {
+        return rl.exportWaveAsCode(self, fileName);
+    }
+
+    /// Copy a wave to a new wave
+    pub fn copy(self: Wave) Wave {
+        return rl.waveCopy(self);
+    }
+
+    /// Crop a wave to defined frames range
+    pub fn crop(self: *Wave, initFrame: i32, finalFrame: i32) void {
+        rl.waveCrop(self, initFrame, finalFrame);
+    }
+
+    /// Convert wave data to desired format
+    pub fn format(self: *Wave, sampleRate: i32, sampleSize: i32, channels: i32) void {
+        rl.waveFormat(self, sampleRate, sampleSize, channels);
+    }
+
     /// Unload wave data
     pub fn unload(self: Wave) void {
         rl.unloadWave(self);
+    }
+
+    /// Checks if wave data is valid (data loaded and parameters)
+    pub fn isValid(self: Wave) bool {
+        return rl.isWaveValid(self);
     }
 };
 
