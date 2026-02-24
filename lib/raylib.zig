@@ -2048,7 +2048,7 @@ pub const NPatchType = enum(c_int) {
     three_patch_horizontal = 2,
 };
 
-// pub const TraceLogCallback = ?fn (c_int, [*c]const u8, [*c]struct___va_list_tag) callconv(C) void;
+pub const TraceLogCallback = *const fn (c_int, [*c]const u8, std.builtin.VaList) callconv(C) void;
 pub const LoadFileDataCallback = *const fn ([*c]const u8, [*c]c_uint) callconv(C) [*c]u8;
 pub const SaveFileDataCallback = *const fn ([*c]const u8, ?*anyopaque, c_uint) callconv(C) bool;
 pub const LoadFileTextCallback = *const fn ([*c]const u8) callconv(C) [*c]u8;
@@ -3110,6 +3110,11 @@ pub fn openURL(url: [:0]const u8) void {
 /// Set the current threshold (minimum) log level
 pub fn setTraceLogLevel(logLevel: TraceLogLevel) void {
     cdef.SetTraceLogLevel(logLevel);
+}
+
+/// Set custom trace log
+pub fn setTraceLogCallback(callback: TraceLogCallback) void {
+    cdef.SetTraceLogCallback(callback);
 }
 
 /// Internal memory allocator
