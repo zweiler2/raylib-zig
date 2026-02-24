@@ -225,12 +225,12 @@ pub const Vector3 = extern struct {
 
     // Vector with components value 0.0
     pub fn zero() Vector3 {
-        return Vector3{ .x = 0.0, .y = 0.0, .z = 0.0};
+        return Vector3{ .x = 0.0, .y = 0.0, .z = 0.0 };
     }
 
     /// Vector with components value 1.0
     pub fn one() Vector3 {
-        return Vector3{ .x = 1.0, .y = 1.0, .z = 1.0};
+        return Vector3{ .x = 1.0, .y = 1.0, .z = 1.0 };
     }
 
     /// Add two vectors
@@ -443,12 +443,12 @@ pub const Vector4 = extern struct {
 
     /// Vector with components value 0.0
     pub fn zero() Vector4 {
-        return Vector4{.x = 0.0, .y = 0.0, .z = 0.0, .w = 0.0};
+        return Vector4{ .x = 0.0, .y = 0.0, .z = 0.0, .w = 0.0 };
     }
 
     /// Vector with components value 1.0
     pub fn one() Vector4 {
-        return Vector4{.x = 1.0, .y = 1.0, .z = 1.0, .w = 1.0};
+        return Vector4{ .x = 1.0, .y = 1.0, .z = 1.0, .w = 1.0 };
     }
 
     /// Add two vectors
