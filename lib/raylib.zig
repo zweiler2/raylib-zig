@@ -1575,6 +1575,11 @@ pub const ModelAnimation = extern struct {
     framePoses: [*c][*c]Transform,
     name: [32]u8,
 
+    /// Load model animations from file
+    pub fn loadFromFile(fileName: []const u8) RaylibError![]ModelAnimation {
+        return rl.loadModelAnimations(fileName);
+    }
+
     /// Unload animation data
     pub fn unload(self: ModelAnimation) void {
         rl.unloadModelAnimation(self);
