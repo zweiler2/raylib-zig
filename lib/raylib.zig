@@ -1544,6 +1544,36 @@ pub const ModelAnimation = extern struct {
 pub const Ray = extern struct {
     position: Vector3,
     direction: Vector3,
+
+    /// Draw a ray line
+    pub fn draw(self: Ray, color: Color) void {
+        rl.drawRay(self, color);
+    }
+
+    /// Get collision info between ray and box
+    pub fn getRayCollisionBox(self: Ray, box: BoundingBox) RayCollision {
+        return rl.getRayCollisionBox(self, box);
+    }
+
+    /// Get collision info between ray and sphere
+    pub fn getRayCollisionSphere(self: Ray, center: Vector3, radius: f32) RayCollision {
+        return rl.getRayCollisionSphere(self, center, radius);
+    }
+
+    /// Get collision info between ray and mesh
+    pub fn getRayCollisionMesh(self: Ray, mesh: Mesh, transform: Matrix) RayCollision {
+        return rl.getRayCollisionMesh(self, mesh, transform);
+    }
+
+    /// Get collision info between ray and triangle
+    pub fn getRayCollisionTriangle(self: Ray, p1: Vector3, p2: Vector3, p3: Vector3) RayCollision {
+        return rl.getRayCollisionTriangle(self, p1, p2, p3);
+    }
+
+    /// Get collision info between ray and quad
+    pub fn getRayCollisionQuad(self: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3) RayCollision {
+        return rl.getRayCollisionQuad(self, p1, p2, p3, p4);
+    }
 };
 
 pub const RayCollision = extern struct {
