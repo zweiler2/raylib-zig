@@ -1704,9 +1704,84 @@ pub const Music = extern struct {
     ctxType: MusicContextType,
     ctxData: *anyopaque,
 
+    /// Load music stream from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Music {
+        return rl.loadMusicStream(fileName);
+    }
+
+    /// Load music stream from data
+    pub fn loadFromMemory(fileType: [:0]const u8, data: []const u8) RaylibError!Music {
+        return rl.loadMusicStreamFromMemory(fileType, data);
+    }
+
+    /// Start music playing
+    pub fn play(self: Music) void {
+        rl.playMusicStream(self);
+    }
+
+    /// Pause music playing
+    pub fn pause(self: Music) void {
+        rl.pauseMusicStream(self);
+    }
+
+    /// Resume playing paused music
+    pub fn @"resume"(self: Music) void {
+        rl.resumeMusicStream(self);
+    }
+
+    /// Stop music playing
+    pub fn stop(self: Music) void {
+        rl.stopMusicStream(self);
+    }
+
+    /// Updates buffers for music streaming
+    pub fn update(self: Music) void {
+        rl.updateMusicStream(self);
+    }
+
+    /// Seek music to a position (in seconds)
+    pub fn seek(self: Music, position: f32) void {
+        rl.seekMusicStream(self, position);
+    }
+
+    /// Set volume for music (1.0 is max level)
+    pub fn setVolume(self: Music, volume: f32) void {
+        rl.setMusicVolume(self, volume);
+    }
+
+    /// Set pitch for music (1.0 is base level)
+    pub fn setPitch(self: Music, pitch: f32) void {
+        rl.setMusicPitch(self, pitch);
+    }
+
+    /// Set pan for a music (0.5 is center)
+    pub fn setPan(self: Music, pan: f32) void {
+        rl.setMusicPan(self, pan);
+    }
+
     /// Unload music stream
     pub fn unload(self: Music) void {
         rl.unloadMusicStream(self);
+    }
+
+    /// Get music time length (in seconds)
+    pub fn getTimeLength(self: Music) f32 {
+        return rl.getMusicTimeLength(self);
+    }
+
+    /// Get current music time played (in seconds)
+    pub fn getTimePlayed(self: Music) f32 {
+        return rl.getMusicTimePlayed(self);
+    }
+
+    /// Checks if a music stream is valid (context and buffers initialized)
+    pub fn isValid(self: Music) bool {
+        return rl.isMusicValid(self);
+    }
+
+    /// Check if music is playing
+    pub fn isPlaying(self: Music) bool {
+        return rl.isMusicStreamPlaying(self);
     }
 };
 
