@@ -1621,9 +1621,79 @@ pub const Sound = extern struct {
     stream: AudioStream,
     frameCount: c_uint,
 
+    /// Load sound from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Sound {
+        return rl.loadSound(fileName);
+    }
+
+    /// Load sound from wave data
+    pub fn loadFromWave(wave: Wave) Sound {
+        return rl.loadSoundFromWave(wave);
+    }
+
+    /// Create a new sound that shares the same sample data as the source sound, does not own the sound data
+    pub fn loadAlias(self: Sound) Sound {
+        return rl.loadSoundAlias(self);
+    }
+
     /// Unload sound
     pub fn unload(self: Sound) void {
         rl.unloadSound(self);
+    }
+
+    /// Unload a sound alias (does not deallocate sample data)
+    pub fn unloadAlias(self: Sound) void {
+        rl.unloadSoundAlias(self);
+    }
+
+    /// Play a sound
+    pub fn play(self: Sound) void {
+        rl.playSound(self);
+    }
+
+    /// Pause a sound
+    pub fn pause(self: Sound) void {
+        rl.pauseSound(self);
+    }
+
+    /// Resume a paused sound
+    pub fn @"resume"(self: Sound) void {
+        rl.resumeSound(self);
+    }
+
+    /// Stop playing a sound
+    pub fn stop(self: Sound) void {
+        rl.stopSound(self);
+    }
+
+    /// Update sound buffer with new data (data and frame count should fit in sound)
+    pub fn update(self: Sound, data: *const anyopaque, sampleCount: i32) void {
+        rl.updateSound(self, data, sampleCount);
+    }
+
+    /// Set volume for a sound (1.0 is max level)
+    pub fn setVolume(self: Sound, volume: f32) void {
+        rl.setSoundVolume(self, volume);
+    }
+
+    /// Set pitch for a sound (1.0 is base level)
+    pub fn setPitch(self: Sound, pitch: f32) void {
+        rl.setSoundPitch(self, pitch);
+    }
+
+    /// Set pan for a sound (0.5 is center)
+    pub fn setPan(self: Sound, pan: f32) void {
+        rl.setSoundPan(self, pan);
+    }
+
+    /// Checks if a sound is valid (data loaded and buffers initialized)
+    pub fn isValid(self: Sound) bool {
+        return rl.isSoundValid(self);
+    }
+
+    /// Check if a sound is currently playing
+    pub fn isPlaying(self: Sound) bool {
+        return rl.isSoundPlaying(self);
     }
 };
 
