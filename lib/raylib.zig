@@ -1626,9 +1626,84 @@ pub const AudioStream = extern struct {
     sampleSize: c_uint,
     channels: c_uint,
 
+    /// Load audio stream (to stream raw audio pcm data)
+    pub fn load(sampleRate: u32, sampleSize: u32, channels: u32) RaylibError!AudioStream {
+        return rl.loadAudioStream(sampleRate, sampleSize, channels);
+    }
+
     /// Unload audio stream and free memory
     pub fn unload(self: AudioStream) void {
         rl.unloadAudioStream(self);
+    }
+
+    /// Play audio stream
+    pub fn play(self: AudioStream) void {
+        rl.playAudioStream(self);
+    }
+
+    /// Pause audio stream
+    pub fn pause(self: AudioStream) void {
+        rl.pauseAudioStream(self);
+    }
+
+    /// Resume audio stream
+    pub fn @"resume"(self: AudioStream) void {
+        rl.resumeAudioStream(self);
+    }
+
+    /// Stop audio stream
+    pub fn stop(self: AudioStream) void {
+        rl.stopAudioStream(self);
+    }
+
+    /// Update audio stream buffers with data
+    pub fn update(self: AudioStream, data: *const anyopaque, frameCount: i32) void {
+        rl.updateAudioStream(self, data, frameCount);
+    }
+
+    /// Set volume for audio stream (1.0 is max level)
+    pub fn setVolume(self: AudioStream, volume: f32) void {
+        rl.setAudioStreamVolume(self, volume);
+    }
+
+    /// Set pitch for audio stream (1.0 is base level)
+    pub fn setPitch(self: AudioStream, pitch: f32) void {
+        rl.setAudioStreamPitch(self, pitch);
+    }
+
+    /// Set pan for audio stream (0.5 is centered)
+    pub fn setPan(self: AudioStream, pan: f32) void {
+        rl.setAudioStreamPan(self, pan);
+    }
+
+    /// Audio thread callback to request new data
+    pub fn setCallback(self: AudioStream, callback: AudioCallback) void {
+        rl.setAudioStreamCallback(self, callback);
+    }
+
+    /// Attach audio stream processor to stream, receives frames x 2 samples as 'float' (stereo)
+    pub fn attachProcessor(self: AudioStream, processor: AudioCallback) void {
+        rl.attachAudioStreamProcessor(self, processor);
+    }
+
+    /// Detach audio stream processor from stream
+    pub fn detachProcessor(self: AudioStream, processor: AudioCallback) void {
+        rl.detachAudioStreamProcessor(self, processor);
+    }
+
+    /// Checks if an audio stream is valid (buffers initialized)
+    pub fn isValid(self: AudioStream) bool {
+        return rl.isAudioStreamValid(self);
+    }
+
+    /// Check if any audio stream buffers requires refill
+    pub fn isProcessed(self: AudioStream) bool {
+        return rl.isAudioStreamProcessed(self);
+    }
+
+    /// Check if audio stream is playing
+    pub fn isPlaying(self: AudioStream) bool {
+        return rl.isAudioStreamPlaying(self);
     }
 };
 
