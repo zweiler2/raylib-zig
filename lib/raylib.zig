@@ -1601,7 +1601,7 @@ pub const Music = extern struct {
     stream: AudioStream,
     frameCount: c_uint,
     looping: bool,
-    ctxType: c_int,
+    ctxType: MusicContextType,
     ctxData: *anyopaque,
 
     /// Unload music stream
@@ -1706,6 +1706,17 @@ pub const TraceLogLevel = enum(c_int) {
     err = 5,
     fatal = 6,
     none = 7,
+};
+
+pub const MusicContextType = enum(c_int) {
+    none = 0,
+    wav = 1,
+    ogg = 2,
+    flac = 3,
+    mp3 = 4,
+    qoa = 5,
+    xm = 6,
+    mod = 7,
 };
 
 pub const KeyboardKey = enum(c_int) {
