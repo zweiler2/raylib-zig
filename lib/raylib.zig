@@ -1586,6 +1586,21 @@ pub const RayCollision = extern struct {
 pub const BoundingBox = extern struct {
     min: Vector3,
     max: Vector3,
+
+    /// Draw bounding box (wires)
+    pub fn draw(self: BoundingBox, color: Color) void {
+        rl.drawBoundingBox(self, color);
+    }
+
+    /// Check collision between two bounding boxes
+    pub fn checkCollisionWithBox(self: BoundingBox, box2: BoundingBox) bool {
+        return rl.checkCollisionBoxes(self, box2);
+    }
+
+    /// Check collision between box and sphere
+    pub fn checkCollisionWithSphere(self: BoundingBox, center: Vector3, radius: f32) bool {
+        return rl.checkCollisionBoxSphere(self, center, radius);
+    }
 };
 
 pub const Wave = extern struct {
