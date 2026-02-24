@@ -1526,6 +1526,46 @@ pub const Model = extern struct {
     pub fn drawWiresEx(self: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: f32, scale: Vector3, tint: Color) void {
         return rl.drawModelWiresEx(self, position, rotationAxis, rotationAngle, scale, tint);
     }
+
+    /// Draw a model as points
+    pub fn drawPoints(self: Model, position: Vector3, scale: f32, tint: Color) void {
+        return rl.drawModelPoints(self, position, scale, tint);
+    }
+
+    /// Draw a model as points with extended parameters
+    pub fn drawPointsEx(self: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: f32, scale: Vector3, tint: Color) void {
+        return rl.drawModelPointsEx(self, position, rotationAxis, rotationAngle, scale, tint);
+    }
+
+    /// Compute model bounding box limits (considers all meshes)
+    pub fn getBoundingBox(self: Model) BoundingBox {
+        return rl.getModelBoundingBox(self);
+    }
+
+    /// Set material for a mesh
+    pub fn setMeshMaterial(self: *Model, meshId: i32, materialId: i32) void {
+        return rl.setModelMeshMaterial(self, meshId, materialId);
+    }
+
+    /// Update model animation pose (CPU)
+    pub fn updateAnimation(self: Model, anim: ModelAnimation, frame: i32) void {
+        return rl.updateModelAnimation(self, anim, frame);
+    }
+
+    /// Update model animation mesh bone matrices (GPU skinning)
+    pub fn updateAnimationBones(self: Model, anim: ModelAnimation, frame: i32) void {
+        return rl.updateModelAnimationBones(self, anim, frame);
+    }
+
+    /// Check if a model is valid (loaded in GPU, VAO/VBOs)
+    pub fn isValid(self: Model) bool {
+        return rl.isModelValid(self);
+    }
+
+    /// Check model animation skeleton match
+    pub fn isAnimationValid(self: Model, anim: ModelAnimation) bool {
+        return rl.isModelAnimationValid(self, anim);
+    }
 };
 
 pub const ModelAnimation = extern struct {
