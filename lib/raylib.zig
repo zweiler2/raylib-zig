@@ -802,6 +802,11 @@ pub const Color = extern struct {
         return rl.getColor(hexValue);
     }
 
+    /// Check if two colors are equal
+    pub fn isEql(self: Color, col2: Color) bool {
+        return rl.colorIsEqual(self, col2);
+    }
+
     /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     pub fn fade(self: Color, a: f32) Color {
         return rl.fade(self, a);
@@ -830,6 +835,16 @@ pub const Color = extern struct {
     /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     pub fn alpha(self: Color, a: f32) Color {
         return rl.colorAlpha(self, a);
+    }
+
+    /// Get src alpha-blended into dst color with tint
+    pub fn alphaBlend(self: Color, src: Color, tintColor: Color) Color {
+        return rl.colorAlphaBlend(self, src, tintColor);
+    }
+
+    /// Get color lerp interpolation between two colors, factor [0.0f..1.0f]
+    pub fn lerp(self: Color, color2: Color, factor: f32) Color {
+        return rl.colorLerp(self, color2, factor);
     }
 
     /// Get hexadecimal value for a Color
