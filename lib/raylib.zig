@@ -2350,9 +2350,24 @@ pub const VrStereoConfig = extern struct {
     scale: [2]f32,
     scaleIn: [2]f32,
 
+    /// Load VR stereo config for VR simulator device parameters
+    pub fn load(deviceInfo: VrDeviceInfo) VrStereoConfig {
+        return rl.loadVrStereoConfig(deviceInfo);
+    }
+
     /// Unload VR stereo config
     pub fn unload(self: VrStereoConfig) void {
         rl.unloadVrStereoConfig(self);
+    }
+
+    /// Begin stereo rendering (requires VR simulator)
+    pub fn begin(self: VrStereoConfig) void {
+        return rl.beginVrStereoMode(self);
+    }
+
+    /// End stereo rendering (requires VR simulator)
+    pub fn end(_: VrStereoConfig) void {
+        return rl.endVrStereoMode();
     }
 };
 
