@@ -876,14 +876,34 @@ pub const Image = extern struct {
         return rl.loadImage(fileName);
     }
 
+    /// Load image from memory buffer, fileType refers to extension: i.e. '.png'
+    pub fn initFromMemory(fileType: [:0]const u8, fileData: []const u8) RaylibError!Image {
+        return rl.loadImageFromMemory(fileType, fileData);
+    }
+
     /// Load image from RAW file data
     pub fn initRaw(fileName: [:0]const u8, width: i32, height: i32, format: PixelFormat, headerSize: i32) RaylibError!Image {
         return rl.loadImageRaw(fileName, width, height, format, headerSize);
     }
 
+    /// Create an image from text (default font)
+    pub fn initText(text: [:0]const u8, fontSize: i32, color: Color) RaylibError!Image {
+        return rl.imageText(text, fontSize, color);
+    }
+
+    /// Create an image from text (custom sprite font)
+    pub fn initTextEx(font: Font, text: [:0]const u8, fontSize: f32, spacing: f32, t: Color) RaylibError!Image {
+        return rl.imageTextEx(font, text, fontSize, spacing, t);
+    }
+
     /// Load image sequence from file (frames appended to image.data)
     pub fn initAnim(fileName: [:0]const u8, frames: *i32) RaylibError!Image {
         return rl.loadImageAnim(fileName, frames);
+    }
+
+    // Load image sequence from memory buffer
+    pub fn initAnimFromMemory(fileType: [:0]const u8, fileData: []const u8, frames: *i32) RaylibError!Image {
+        return rl.loadImageAnimFromMemory(fileType, fileData, frames);
     }
 
     /// Load image from GPU texture data
@@ -899,16 +919,6 @@ pub const Image = extern struct {
     /// Unload image from CPU memory (RAM)
     pub fn unload(self: Image) void {
         rl.unloadImage(self);
-    }
-
-    /// Create an image from text (default font)
-    pub fn initText(text: [:0]const u8, fontSize: i32, color: Color) RaylibError!Image {
-        return rl.imageText(text, fontSize, color);
-    }
-
-    /// Create an image from text (custom sprite font)
-    pub fn initTextEx(font: Font, text: [:0]const u8, fontSize: f32, spacing: f32, t: Color) RaylibError!Image {
-        return rl.imageTextEx(font, text, fontSize, spacing, t);
     }
 
     /// Generate image: plain color
@@ -966,6 +976,11 @@ pub const Image = extern struct {
         return rl.imageFromImage(self, rec);
     }
 
+    /// Create an image from a selected channel of another image (GRAYSCALE)
+    pub fn copyChannel(self: Image, selectedChannel: i32) Image {
+        return rl.imageFromChannel(self, selectedChannel);
+    }
+
     /// Convert image data to desired format
     pub fn setFormat(self: *Image, newFormat: PixelFormat) void {
         return rl.imageFormat(self, newFormat);
@@ -1004,6 +1019,11 @@ pub const Image = extern struct {
     /// Apply Gaussian blur using a box blur approximation
     pub fn blurGaussian(self: *Image, blurSize: i32) void {
         rl.imageBlurGaussian(self, blurSize);
+    }
+
+    // Apply custom square convolution kernel to image
+    pub fn kernelConvolution(self: *Image, kernel: []const f32) void {
+        rl.imageKernelConvolution(self, kernel);
     }
 
     /// Resize image (Bicubic scaling algorithm)
@@ -1121,6 +1141,11 @@ pub const Image = extern struct {
         rl.imageDrawLineV(self, start, end, color);
     }
 
+    /// Draw a line defining thickness within an image
+    pub fn drawLineEx(self: *Image, start: Vector2, end: Vector2, thick: i32, color: Color) void {
+        rl.imageDrawLineEx(self, start, end, thick, color);
+    }
+
     /// Draw a filled circle within an image
     pub fn drawCircle(self: *Image, centerX: i32, centerY: i32, radius: i32, color: Color) void {
         rl.imageDrawCircle(self, centerX, centerY, radius, color);
@@ -1161,6 +1186,31 @@ pub const Image = extern struct {
         rl.imageDrawRectangleLines(self, rec, thick, color);
     }
 
+    /// Draw triangle within an image
+    pub fn drawTriangle(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) void {
+        rl.imageDrawTriangle(self, v1, v2, v3, color);
+    }
+
+    /// Draw triangle with interpolated colors within an image
+    pub fn drawTriangleEx(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, c1: Color, c2: Color, c3: Color) void {
+        rl.imageDrawTriangleEx(self, v1, v2, v3, c1, c2, c3);
+    }
+
+    /// Draw triangle outline within an image
+    pub fn drawTriangleLines(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) void {
+        rl.imageDrawTriangleLines(self, v1, v2, v3, color);
+    }
+
+    /// Draw a triangle fan defined by points within an image (first vertex is the center)
+    pub fn drawTriangleFan(self: *Image, points: []const Vector2, pointCount: i32, color: Color) void {
+        rl.imageDrawTriangleFan(self, points, pointCount, color);
+    }
+
+    /// Draw a triangle strip defined by points within an image
+    pub fn drawTriangleStrip(self: *Image, points: []const Vector2, pointCount: i32, color: Color) void {
+        rl.imageDrawTriangleStrip(self, points, pointCount, color);
+    }
+
     /// Draw a source image within a destination image (tint applied to source)
     pub fn drawImage(self: *Image, src: Image, srcRec: Rectangle, dstRec: Rectangle, t: Color) void {
         rl.imageDraw(self, src, srcRec, dstRec, t);
@@ -1181,6 +1231,11 @@ pub const Image = extern struct {
         return rl.exportImage(self, fileName);
     }
 
+    /// Export image to memory buffer
+    pub fn exportToMemory(self: Image, fileType: []const u8) RaylibError![]u8 {
+        return rl.exportImageToMemory(self, fileType);
+    }
+
     /// Export image as code file defining an array of bytes, returns true on success
     pub fn exportAsCode(self: Image, fileName: [:0]const u8) bool {
         return rl.exportImageAsCode(self, fileName);
@@ -1198,6 +1253,11 @@ pub const Image = extern struct {
 
     pub fn asCubemap(self: Image, layout: CubemapLayout) RaylibError!Texture {
         return Texture.fromCubemap(self, layout);
+    }
+
+    /// Check if an image is valid (data and parameters)
+    pub fn isValid(self: Image) bool {
+        return rl.isImageValid(self);
     }
 };
 
