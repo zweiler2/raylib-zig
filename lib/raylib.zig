@@ -1311,6 +1311,11 @@ pub const Font = extern struct {
     recs: [*c]Rectangle,
     glyphs: [*c]GlyphInfo,
 
+    /// Get the default Font
+    pub fn getDefault() RaylibError!Font {
+        return rl.getFontDefault();
+    }
+
     /// Load font from file into GPU memory (VRAM)
     pub fn init(fileName: [:0]const u8) RaylibError!Font {
         return rl.loadFont(fileName);
@@ -1344,6 +1349,46 @@ pub const Font = extern struct {
     /// Export font as code file, returns true on success
     pub fn exportAsCode(self: Font, fileName: [:0]const u8) bool {
         return rl.exportFontAsCode(self, fileName);
+    }
+
+    /// Measure string size for Font
+    pub fn measureTextEx(self: Font, text: [:0]const u8, fontSize: f32, spacing: f32) Vector2 {
+        return rl.measureTextEx(self, text, fontSize, spacing);
+    }
+
+    /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphIndex(self: Font, codepoint: i32) i32 {
+        return rl.getGlyphIndex(self, codepoint);
+    }
+
+    /// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphInfo(self: Font, codepoint: i32) GlyphInfo {
+        return rl.getGlyphInfo(self, codepoint);
+    }
+
+    /// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphAtlasRec(self: Font, codepoint: i32) Rectangle {
+        return rl.getGlyphAtlasRec(self, codepoint);
+    }
+
+    /// Draw text using font and additional parameters
+    pub fn drawTextEx(self: Font, text: [:0]const u8, position: Vector2, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextEx(self, text, position, fontSize, spacing, tint);
+    }
+
+    /// Draw text using Font and pro parameters (rotation)
+    pub fn drawTextPro(self: Font, text: [:0]const u8, position: Vector2, origin: Vector2, rotation: f32, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextPro(self, text, position, origin, rotation, fontSize, spacing, tint);
+    }
+
+    /// Draw one character (codepoint)
+    pub fn drawTextCodepoint(self: Font, codepoint: i32, position: Vector2, fontSize: f32, tint: Color) void {
+        return rl.drawTextCodepoint(self, codepoint, position, fontSize, tint);
+    }
+
+    /// Draw multiple character (codepoint)
+    pub fn drawTextCodepoints(self: Font, codepoints: []const c_int, position: Vector2, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextCodepoints(self, codepoints, position, fontSize, spacing, tint);
     }
 };
 
