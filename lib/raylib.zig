@@ -2375,6 +2375,31 @@ pub const FilePathList = extern struct {
     capacity: c_uint,
     count: c_uint,
     paths: [*c][*c]u8,
+
+    /// Load directory files into FilePathList
+    pub fn loadDirFiles(dirPath: [:0]const u8) FilePathList {
+        return rl.loadDirectoryFiles(dirPath);
+    }
+
+    /// Load directory files into FilePathList
+    pub fn loadDirFilesEx(basePath: [:0]const u8, filter: [:0]const u8, scanSubdirs: bool) FilePathList {
+        return rl.loadDirectoryFilesEx(basePath, filter, scanSubdirs);
+    }
+
+    /// Unload filepaths
+    pub fn unloadDirFiles(self: FilePathList) void {
+        return rl.unloadDirectoryFiles(self);
+    }
+
+    /// Load dropped filepaths
+    pub fn loadDroppedFiles() FilePathList {
+        return rl.loadDroppedFiles();
+    }
+
+    /// Unload dropped filepaths
+    pub fn unloadDroppedFiles(self: FilePathList) void {
+        return rl.unloadDroppedFiles(self);
+    }
 };
 
 pub const AutomationEvent = extern struct {
