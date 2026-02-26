@@ -1364,6 +1364,11 @@ pub const Camera3D = extern struct {
         rl.updateCamera(self, mode);
     }
 
+    /// Update camera movement/rotation
+    pub fn updatePro(self: *Camera3D, movement: Vector3, rotation: Vector3, zoom: f32) void {
+        rl.updateCameraPro(self, movement, rotation, zoom);
+    }
+
     /// Get camera transform matrix (view matrix)
     pub fn getMatrix(self: Camera3D) Matrix {
         return rl.getCameraMatrix(self);
