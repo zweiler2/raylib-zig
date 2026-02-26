@@ -2406,6 +2406,26 @@ pub const AutomationEvent = extern struct {
     frame: c_uint,
     type: c_uint,
     params: [4]c_int,
+
+    /// Play a recorded automation event
+    pub fn play(self: AutomationEvent) void {
+        return rl.playAutomationEvent(self);
+    }
+
+    /// Set automation event internal base frame to start recording
+    pub fn setBaseFrame(frame: i32) void {
+        return rl.setAutomationEventBaseFrame(frame);
+    }
+
+    /// Start recording automation events (AutomationEventList must be set)
+    pub fn startRecording() void {
+        return rl.startAutomationEventRecording();
+    }
+
+    /// Stop recording automation events
+    pub fn stopRecording() void {
+        return rl.stopAutomationEventRecording();
+    }
 };
 
 pub const AutomationEventList = extern struct {
