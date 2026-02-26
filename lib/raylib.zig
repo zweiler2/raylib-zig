@@ -1265,6 +1265,7 @@ pub const RenderTexture = extern struct {
     texture: Texture,
     depth: Texture,
 
+    /// Load texture for rendering (framebuffer)
     pub fn init(width: i32, height: i32) RaylibError!RenderTexture {
         return rl.loadRenderTexture(width, height);
     }
@@ -1275,13 +1276,18 @@ pub const RenderTexture = extern struct {
     }
 
     /// Begin drawing to render texture
-    pub fn begin(self: RenderTexture2D) void {
+    pub fn begin(self: RenderTexture) void {
         rl.beginTextureMode(self);
     }
 
     /// Ends drawing to render texture
-    pub fn end(_: RenderTexture2D) void {
+    pub fn end(_: RenderTexture) void {
         rl.endTextureMode();
+    }
+
+    /// Check if a render texture is valid (loaded in GPU)
+    pub fn isValid(self: RenderTexture) bool {
+        return rl.isRenderTextureValid(self);
     }
 };
 pub const RenderTexture2D = RenderTexture;
