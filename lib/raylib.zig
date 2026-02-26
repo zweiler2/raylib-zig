@@ -2433,9 +2433,24 @@ pub const AutomationEventList = extern struct {
     count: c_uint,
     events: [*c]AutomationEvent,
 
+    /// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
+    pub fn load(fileName: [:0]const u8) AutomationEventList {
+        return rl.loadAutomationEventList(fileName);
+    }
+
     /// Unload automation events list from file
     pub fn unload(self: AutomationEventList) void {
-        rl.unloadAutomationEventList(self);
+        return rl.unloadAutomationEventList(self);
+    }
+
+    /// Set automation event list to record to
+    pub fn use(self: *AutomationEventList) void {
+        return rl.setAutomationEventList(self);
+    }
+
+    /// Export automation events list as text file
+    pub fn exportToFile(self: AutomationEventList, fileName: [:0]const u8) bool {
+        return rl.exportAutomationEventList(self, fileName);
     }
 };
 
