@@ -853,6 +853,56 @@ pub const Rectangle = extern struct {
         return Rectangle{ .x = x, .y = y, .width = width, .height = height };
     }
 
+    /// Draw a color-filled rectangle
+    pub fn draw(self: Rectangle, color: Color) void {
+        rl.drawRectangle(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), color);
+    }
+
+    /// Draw a color-filled rectangle with pro parameters
+    pub fn drawPro(self: Rectangle, origin: Vector2, rotation: f32, color: Color) void {
+        rl.drawRectanglePro(self, origin, rotation, color);
+    }
+
+    /// Draw rectangle with rounded edges
+    pub fn drawRounded(self: Rectangle, roundness: f32, segments: i32, color: Color) void {
+        rl.drawRectangleRounded(self, roundness, segments, color);
+    }
+
+    /// Draw rectangle lines with rounded edges
+    pub fn drawRoundedLines(self: Rectangle, roundness: f32, segments: i32, color: Color) void {
+        rl.drawRectangleRoundedLines(self, roundness, segments, color);
+    }
+
+    /// Draw rectangle with rounded edges outline
+    pub fn drawRoundedLinesEx(self: Rectangle, roundness: f32, segments: i32, lineThick: f32, color: Color) void {
+        rl.drawRectangleRoundedLinesEx(self, roundness, segments, lineThick, color);
+    }
+
+    /// Draw rectangle outline
+    pub fn drawLines(self: Rectangle, color: Color) void {
+        rl.drawRectangleLines(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), color);
+    }
+
+    /// Draw rectangle outline with extended parameters
+    pub fn drawLinesEx(self: Rectangle, lineThick: f32, color: Color) void {
+        rl.drawRectangleLinesEx(self, lineThick, color);
+    }
+
+    /// Draw a vertical-gradient-filled rectangle
+    pub fn drawGradientV(self: Rectangle, top: Color, bottom: Color) void {
+        rl.drawRectangleGradientV(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), top, bottom);
+    }
+
+    /// Draw a horizontal-gradient-filled rectangle
+    pub fn drawGradientH(self: Rectangle, left: Color, right: Color) void {
+        rl.drawRectangleGradientH(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), left, right);
+    }
+
+    /// Draw a gradient-filled rectangle with custom vertex colors
+    pub fn drawGradientEx(self: Rectangle, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color) void {
+        rl.drawRectangleGradientEx(self, topLeft, bottomLeft, bottomRight, topRight);
+    }
+
     /// Check collision between two rectangles
     pub fn checkCollision(self: Rectangle, rec2: Rectangle) bool {
         return rl.checkCollisionRecs(self, rec2);
