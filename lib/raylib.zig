@@ -1208,6 +1208,7 @@ pub const Texture = extern struct {
     mipmaps: c_int,
     format: PixelFormat,
 
+    /// Load texture from file into GPU memory (VRAM)
     pub fn init(fileName: [:0]const u8) RaylibError!Texture {
         return rl.loadTexture(fileName);
     }
@@ -1225,6 +1226,16 @@ pub const Texture = extern struct {
     /// Unload texture from GPU memory (VRAM)
     pub fn unload(self: Texture) void {
         rl.unloadTexture(self);
+    }
+
+    /// Update GPU texture with new data (pixels should be able to fill texture)
+    pub fn update(self: Texture, pixels: *const anyopaque) void {
+        return rl.updateTexture(self, pixels);
+    }
+
+    /// Update GPU texture rectangle with new data (pixels and rec should fit in texture)
+    pub fn updateRec(self: Texture, rec: Rectangle, pixels: *const anyopaque) void {
+        rl.updateTextureRec(self, rec, pixels);
     }
 
     /// Draw a Texture2D
@@ -1255,6 +1266,31 @@ pub const Texture = extern struct {
     /// Draws a texture (or part of it) that stretches or shrinks nicely
     pub fn drawNPatch(self: Texture, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: f32, tint: Color) void {
         rl.drawTextureNPatch(self, nPatchInfo, dest, origin, rotation, tint);
+    }
+
+    /// Set texture and rectangle to be used on shapes drawing
+    pub fn setShapesTexture(self: Texture, source: Rectangle) void {
+        return rl.setShapesTexture(self, source);
+    }
+
+    /// Set texture scaling filter mode
+    pub fn setFilter(self: Texture, filter: TextureFilter) void {
+        return rl.setTextureFilter(self, filter);
+    }
+
+    /// Set texture wrapping mode
+    pub fn setWrap(self: Texture, wrap: TextureWrap) void {
+        return rl.setTextureWrap(self, wrap);
+    }
+
+    /// Generate GPU mipmaps for a texture
+    pub fn genMipmaps(self: *Texture) void {
+        return rl.genTextureMipmaps(self);
+    }
+
+    /// Check if a texture is valid (loaded in GPU)
+    pub fn isValid(self: Texture) bool {
+        return rl.isTextureValid(self);
     }
 };
 pub const Texture2D = Texture;
