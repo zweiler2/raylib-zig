@@ -1625,14 +1625,13 @@ pub const Mesh = extern struct {
     tangents: [*c]f32,
     colors: [*c]u8,
     indices: [*c]c_ushort,
+    boneCount: c_int,
+    boneIndices: [*c]u8,
+    boneWeights: [*c]f32,
     animVertices: [*c]f32,
     animNormals: [*c]f32,
-    boneIds: [*c]u8,
-    boneWeights: [*c]f32,
-    boneMatrices: [*c]Matrix,
-    boneCount: c_int,
-    vaoId: c_int,
-    vboId: [*c]c_int,
+    vaoId: c_uint,
+    vboId: [*c]c_uint,
 
     /// Generate polygonal mesh
     pub fn genPoly(sides: i32, radius: f32) Mesh {
@@ -1842,10 +1841,17 @@ pub const Transform = extern struct {
     rotation: Quaternion,
     scale: Vector3,
 };
+pub const ModelAnimPose = [*c]Transform;
 
 pub const BoneInfo = extern struct {
     name: [32]u8,
     parent: c_int,
+};
+
+pub const ModelSkeleton = extern struct {
+    boneCount: c_int,
+    bones: [*c]BoneInfo,
+    bindPose: ModelAnimPose,
 };
 
 pub const Model = extern struct {
@@ -1855,9 +1861,9 @@ pub const Model = extern struct {
     meshes: [*c]Mesh,
     materials: [*c]Material,
     meshMaterial: [*c]c_int,
-    boneCount: c_int,
-    bones: [*c]BoneInfo,
-    bindPose: [*c]Transform,
+    skeleton: ModelSkeleton,
+    currentPose: ModelAnimPose,
+    boneMatrices: [*c]Matrix,
 
     /// Load model from file (meshes and materials)
     pub fn init(fileName: [:0]const u8) RaylibError!Model {
@@ -1936,11 +1942,10 @@ pub const Model = extern struct {
 };
 
 pub const ModelAnimation = extern struct {
-    boneCount: c_int,
-    frameCount: c_int,
-    bones: [*c]BoneInfo,
-    framePoses: [*c][*c]Transform,
     name: [32]u8,
+    boneCount: c_int,
+    keyframeCount: c_int,
+    keyframePoses: [*c]ModelAnimPose,
 
     /// Load model animations from file
     pub fn loadFromFile(fileName: []const u8) RaylibError![]ModelAnimation {
@@ -2372,7 +2377,6 @@ pub const VrStereoConfig = extern struct {
 };
 
 pub const FilePathList = extern struct {
-    capacity: c_uint,
     count: c_uint,
     paths: [*c][*c]u8,
 
