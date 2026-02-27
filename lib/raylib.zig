@@ -1914,14 +1914,14 @@ pub const Model = extern struct {
         return rl.setModelMeshMaterial(self, meshId, materialId);
     }
 
-    /// Update model animation pose (CPU)
-    pub fn updateAnimation(self: Model, anim: ModelAnimation, frame: i32) void {
+    /// Update model animation pose (vertex buffers and bone matrices)
+    pub fn updateAnimation(self: Model, anim: ModelAnimation, frame: f32) void {
         return rl.updateModelAnimation(self, anim, frame);
     }
 
-    /// Update model animation mesh bone matrices (GPU skinning)
-    pub fn updateAnimationBones(self: Model, anim: ModelAnimation, frame: i32) void {
-        return rl.updateModelAnimationBones(self, anim, frame);
+    /// Update model animation pose, blending two animations
+    pub fn updateAnimationEx(self: Model, animA: ModelAnimation, frameA: f32, animB: ModelAnimation, frameB: f32, blend: f32) void {
+        return rl.updateModelAnimationEx(self, animA, frameA, animB, frameB, blend);
     }
 
     /// Check if a model is valid (loaded in GPU, VAO/VBOs)
@@ -1948,8 +1948,8 @@ pub const ModelAnimation = extern struct {
     }
 
     /// Unload animation data
-    pub fn unload(self: ModelAnimation) void {
-        rl.unloadModelAnimation(self);
+    pub fn unload(self: *ModelAnimation) void {
+        cdef.UnloadModelAnimations(@as([*c]ModelAnimation, @ptrCast(self)), 1);
     }
 };
 
@@ -4079,8 +4079,8 @@ pub fn makeDirectory(dirPath: [:0]const u8) i32 {
 }
 
 /// Change working directory, return true on success
-pub fn changeDirectory(dir: [:0]const u8) bool {
-    return cdef.ChangeDirectory(@as([*c]const u8, @ptrCast(dir)));
+pub fn changeDirectory(dirPath: [:0]const u8) bool {
+    return cdef.ChangeDirectory(@as([*c]const u8, @ptrCast(dirPath)));
 }
 
 /// Check if a given path is a file or a directory
@@ -4121,6 +4121,16 @@ pub fn loadDroppedFiles() FilePathList {
 /// Unload dropped filepaths
 pub fn unloadDroppedFiles(files: FilePathList) void {
     cdef.UnloadDroppedFiles(files);
+}
+
+/// Get the file count in a directory
+pub fn getDirectoryFileCount(dirPath: [:0]const u8) u32 {
+    return @as(u32, cdef.GetDirectoryFileCount(@as([*c]const u8, @ptrCast(dirPath))));
+}
+
+/// Get the file count in a directory with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result
+pub fn getDirectoryFileCountEx(basePath: [:0]const u8, filter: [:0]const u8, scanSubdirs: bool) u32 {
+    return @as(u32, cdef.GetDirectoryFileCountEx(@as([*c]const u8, @ptrCast(basePath)), @as([*c]const u8, @ptrCast(filter)), scanSubdirs));
 }
 
 /// Compress data (DEFLATE algorithm), memory must be MemFree()
@@ -5740,19 +5750,14 @@ pub fn loadModelAnimations(fileName: []const u8) RaylibError![]ModelAnimation {
     return _ptr[0..@as(usize, @intCast(_len))];
 }
 
-/// Update model animation pose (CPU)
-pub fn updateModelAnimation(model: Model, anim: ModelAnimation, frame: i32) void {
-    cdef.UpdateModelAnimation(model, anim, @as(c_int, frame));
+/// Update model animation pose (vertex buffers and bone matrices)
+pub fn updateModelAnimation(model: Model, anim: ModelAnimation, frame: f32) void {
+    cdef.UpdateModelAnimation(model, anim, frame);
 }
 
-/// Update model animation mesh bone matrices (GPU skinning)
-pub fn updateModelAnimationBones(model: Model, anim: ModelAnimation, frame: i32) void {
-    cdef.UpdateModelAnimationBones(model, anim, @as(c_int, frame));
-}
-
-/// Unload animation data
-pub fn unloadModelAnimation(anim: ModelAnimation) void {
-    cdef.UnloadModelAnimation(anim);
+/// Update model animation pose, blending two animations
+pub fn updateModelAnimationEx(model: Model, animA: ModelAnimation, frameA: f32, animB: ModelAnimation, frameB: f32, blend: f32) void {
+    cdef.UpdateModelAnimationEx(model, animA, frameA, animB, frameB, blend);
 }
 
 /// Check model animation skeleton match
@@ -5845,7 +5850,7 @@ pub fn isSoundValid(sound: Sound) bool {
     return cdef.IsSoundValid(sound);
 }
 
-/// Update sound buffer with new data (data and frame count should fit in sound)
+/// Update sound buffer with new data (default data format: 32 bit float, stereo)
 pub fn updateSound(sound: Sound, data: *const anyopaque, sampleCount: i32) void {
     cdef.UpdateSound(sound, data, @as(c_int, sampleCount));
 }
@@ -5910,7 +5915,7 @@ pub fn setSoundPitch(sound: Sound, pitch: f32) void {
     cdef.SetSoundPitch(sound, pitch);
 }
 
-/// Set pan for a sound (0.5 is center)
+/// Set pan for a sound (-1.0 left, 0.0 center, 1.0 right)
 pub fn setSoundPan(sound: Sound, pan: f32) void {
     cdef.SetSoundPan(sound, pan);
 }
@@ -5990,7 +5995,7 @@ pub fn setMusicPitch(music: Music, pitch: f32) void {
     cdef.SetMusicPitch(music, pitch);
 }
 
-/// Set pan for a music (0.5 is center)
+/// Set pan for a music (-1.0 left, 0.0 center, 1.0 right)
 pub fn setMusicPan(music: Music, pan: f32) void {
     cdef.SetMusicPan(music, pan);
 }
