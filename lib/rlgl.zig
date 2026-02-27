@@ -268,9 +268,9 @@ pub const rl_default_shader_attrib_location_color = @as(i32, 3);
 pub const rl_default_shader_attrib_location_tangent = @as(i32, 4);
 pub const rl_default_shader_attrib_location_texcoord2 = @as(i32, 5);
 pub const rl_default_shader_attrib_location_indices = @as(i32, 6);
-pub const rl_default_shader_attrib_location_boneids = @as(i32, 7);
-pub const rl_default_shader_attrib_location_boneweights = @as(i32, 5);
-pub const rl_default_shader_attrib_location_instance_tx = @as(i32, 9);
+pub const rl_default_shader_attrib_location_boneindices = @as(i32, 7);
+pub const rl_default_shader_attrib_location_boneweights = @as(i32, 8);
+pub const rl_default_shader_attrib_location_instancetransforms = @as(i32, 9);
 
 /// Choose the current matrix to be transformed
 pub fn rlMatrixMode(mode: i32) void {
