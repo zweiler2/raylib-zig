@@ -109,7 +109,7 @@ pub const SliderProperty = enum(c_int) {
 
 pub const ProgressBarProperty = enum(c_int) {
     progress_padding = 16,
-    progress_side = 17,
+    progress_side,
 };
 
 pub const ScrollBarProperty = enum(c_int) {
@@ -142,8 +142,8 @@ pub const TextBoxProperty = enum(c_int) {
 };
 
 pub const ValueBoxProperty = enum(c_int) {
-    spin_button_width = 16,
-    spin_button_spacing,
+    spinner_button_width = 16,
+    spinner_button_spacing,
 };
 
 pub const ListViewProperty = enum(c_int) {
