@@ -595,6 +595,10 @@ pub fn quaternionEquals(p: Quaternion, q: Quaternion) i32 {
     return @as(i32, cdef.QuaternionEquals(p, q));
 }
 
+pub fn matrixCompose(translation: Vector3, rotation: Quaternion, scale: Vector3) Matrix {
+    return cdef.MatrixCompose(translation, rotation, scale);
+}
+
 pub fn matrixDecompose(mat: Matrix, translation: *Vector3, rotation: *Quaternion, scale: *Vector3) void {
     cdef.MatrixDecompose(mat, @as([*c]Vector3, @ptrCast(translation)), @as([*c]Quaternion, @ptrCast(rotation)), @as([*c]Vector3, @ptrCast(scale)));
 }

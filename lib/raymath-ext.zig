@@ -146,4 +146,5 @@ pub extern "c" fn QuaternionFromEuler(pitch: f32, yaw: f32, roll: f32) rl.Quater
 pub extern "c" fn QuaternionToEuler(q: rl.Quaternion) rl.Vector3;
 pub extern "c" fn QuaternionTransform(q: rl.Quaternion, mat: rl.Matrix) rl.Quaternion;
 pub extern "c" fn QuaternionEquals(p: rl.Quaternion, q: rl.Quaternion) c_int;
+pub extern "c" fn MatrixCompose(translation: rl.Vector3, rotation: rl.Quaternion, scale: rl.Vector3) rl.Matrix;
 pub extern "c" fn MatrixDecompose(mat: rl.Matrix, translation: [*c]rl.Vector3, rotation: [*c]rl.Quaternion, scale: [*c]rl.Vector3) void;
