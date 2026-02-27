@@ -940,12 +940,12 @@ pub fn rlUnloadShaderProgram(id: u32) void {
     cdef.rlUnloadShaderProgram(@as(c_uint, id));
 }
 
-/// Get shader location uniform
+/// Get shader location uniform, requires shader program id
 pub fn rlGetLocationUniform(shaderId: u32, uniformName: [:0]const u8) i32 {
     return @as(i32, cdef.rlGetLocationUniform(@as(c_uint, shaderId), @as([*c]const u8, @ptrCast(uniformName))));
 }
 
-/// Get shader location attribute
+/// Get shader location attribute, requires shader program id
 pub fn rlGetLocationAttrib(shaderId: u32, attribName: [:0]const u8) i32 {
     return @as(i32, cdef.rlGetLocationAttrib(@as(c_uint, shaderId), @as([*c]const u8, @ptrCast(attribName))));
 }
