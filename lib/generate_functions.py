@@ -347,9 +347,6 @@ def parse_header(header_name: str, output_file: str, ext_file: str, prefix: str,
         func_name = result.group(2)
         arguments = result.group(3)
 
-        if func_name == "SetTraceLogCallback":
-            continue
-
         return_type = c_to_zig_type(return_type)
         func_name, return_type = fix_pointer(func_name, return_type)
 

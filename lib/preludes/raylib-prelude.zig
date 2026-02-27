@@ -57,12 +57,12 @@ pub const Vector2 = extern struct {
 
     /// Vector with components value 0.0
     pub fn zero() Vector2 {
-        return math.vector2Zero();
+        return Vector2{ .x = 0.0, .y = 0.0 };
     }
 
     /// Vector with components value 1.0
     pub fn one() Vector2 {
-        return math.vector2One();
+        return Vector2{ .x = 1.0, .y = 1.0 };
     }
 
     /// Add two vectors (v1 + v2)
@@ -225,12 +225,12 @@ pub const Vector3 = extern struct {
 
     // Vector with components value 0.0
     pub fn zero() Vector3 {
-        return math.vector3Zero();
+        return Vector3{ .x = 0.0, .y = 0.0, .z = 0.0 };
     }
 
     /// Vector with components value 1.0
     pub fn one() Vector3 {
-        return math.vector3One();
+        return Vector3{ .x = 1.0, .y = 1.0, .z = 1.0 };
     }
 
     /// Add two vectors
@@ -443,12 +443,12 @@ pub const Vector4 = extern struct {
 
     /// Vector with components value 0.0
     pub fn zero() Vector4 {
-        return math.vector4Zero();
+        return Vector4{ .x = 0.0, .y = 0.0, .z = 0.0, .w = 0.0 };
     }
 
     /// Vector with components value 1.0
     pub fn one() Vector4 {
-        return math.vector4One();
+        return Vector4{ .x = 1.0, .y = 1.0, .z = 1.0, .w = 1.0 };
     }
 
     /// Add two vectors
@@ -802,6 +802,11 @@ pub const Color = extern struct {
         return rl.getColor(hexValue);
     }
 
+    /// Check if two colors are equal
+    pub fn isEql(self: Color, col2: Color) bool {
+        return rl.colorIsEqual(self, col2);
+    }
+
     /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     pub fn fade(self: Color, a: f32) Color {
         return rl.fade(self, a);
@@ -832,6 +837,16 @@ pub const Color = extern struct {
         return rl.colorAlpha(self, a);
     }
 
+    /// Get src alpha-blended into dst color with tint
+    pub fn alphaBlend(self: Color, src: Color, tintColor: Color) Color {
+        return rl.colorAlphaBlend(self, src, tintColor);
+    }
+
+    /// Get color lerp interpolation between two colors, factor [0.0f..1.0f]
+    pub fn lerp(self: Color, color2: Color, factor: f32) Color {
+        return rl.colorLerp(self, color2, factor);
+    }
+
     /// Get hexadecimal value for a Color
     pub fn toInt(self: Color) i32 {
         return rl.colorToInt(self);
@@ -851,6 +866,56 @@ pub const Rectangle = extern struct {
 
     pub fn init(x: f32, y: f32, width: f32, height: f32) Rectangle {
         return Rectangle{ .x = x, .y = y, .width = width, .height = height };
+    }
+
+    /// Draw a color-filled rectangle
+    pub fn draw(self: Rectangle, color: Color) void {
+        rl.drawRectangle(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), color);
+    }
+
+    /// Draw a color-filled rectangle with pro parameters
+    pub fn drawPro(self: Rectangle, origin: Vector2, rotation: f32, color: Color) void {
+        rl.drawRectanglePro(self, origin, rotation, color);
+    }
+
+    /// Draw rectangle with rounded edges
+    pub fn drawRounded(self: Rectangle, roundness: f32, segments: i32, color: Color) void {
+        rl.drawRectangleRounded(self, roundness, segments, color);
+    }
+
+    /// Draw rectangle lines with rounded edges
+    pub fn drawRoundedLines(self: Rectangle, roundness: f32, segments: i32, color: Color) void {
+        rl.drawRectangleRoundedLines(self, roundness, segments, color);
+    }
+
+    /// Draw rectangle with rounded edges outline
+    pub fn drawRoundedLinesEx(self: Rectangle, roundness: f32, segments: i32, lineThick: f32, color: Color) void {
+        rl.drawRectangleRoundedLinesEx(self, roundness, segments, lineThick, color);
+    }
+
+    /// Draw rectangle outline
+    pub fn drawLines(self: Rectangle, color: Color) void {
+        rl.drawRectangleLines(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), color);
+    }
+
+    /// Draw rectangle outline with extended parameters
+    pub fn drawLinesEx(self: Rectangle, lineThick: f32, color: Color) void {
+        rl.drawRectangleLinesEx(self, lineThick, color);
+    }
+
+    /// Draw a vertical-gradient-filled rectangle
+    pub fn drawGradientV(self: Rectangle, top: Color, bottom: Color) void {
+        rl.drawRectangleGradientV(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), top, bottom);
+    }
+
+    /// Draw a horizontal-gradient-filled rectangle
+    pub fn drawGradientH(self: Rectangle, left: Color, right: Color) void {
+        rl.drawRectangleGradientH(@intFromFloat(self.x), @intFromFloat(self.y), @intFromFloat(self.width), @intFromFloat(self.height), left, right);
+    }
+
+    /// Draw a gradient-filled rectangle with custom vertex colors
+    pub fn drawGradientEx(self: Rectangle, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color) void {
+        rl.drawRectangleGradientEx(self, topLeft, bottomLeft, bottomRight, topRight);
     }
 
     /// Check collision between two rectangles
@@ -876,14 +941,34 @@ pub const Image = extern struct {
         return rl.loadImage(fileName);
     }
 
+    /// Load image from memory buffer, fileType refers to extension: i.e. '.png'
+    pub fn initFromMemory(fileType: [:0]const u8, fileData: []const u8) RaylibError!Image {
+        return rl.loadImageFromMemory(fileType, fileData);
+    }
+
     /// Load image from RAW file data
     pub fn initRaw(fileName: [:0]const u8, width: i32, height: i32, format: PixelFormat, headerSize: i32) RaylibError!Image {
         return rl.loadImageRaw(fileName, width, height, format, headerSize);
     }
 
+    /// Create an image from text (default font)
+    pub fn initText(text: [:0]const u8, fontSize: i32, color: Color) RaylibError!Image {
+        return rl.imageText(text, fontSize, color);
+    }
+
+    /// Create an image from text (custom sprite font)
+    pub fn initTextEx(font: Font, text: [:0]const u8, fontSize: f32, spacing: f32, t: Color) RaylibError!Image {
+        return rl.imageTextEx(font, text, fontSize, spacing, t);
+    }
+
     /// Load image sequence from file (frames appended to image.data)
     pub fn initAnim(fileName: [:0]const u8, frames: *i32) RaylibError!Image {
         return rl.loadImageAnim(fileName, frames);
+    }
+
+    // Load image sequence from memory buffer
+    pub fn initAnimFromMemory(fileType: [:0]const u8, fileData: []const u8, frames: *i32) RaylibError!Image {
+        return rl.loadImageAnimFromMemory(fileType, fileData, frames);
     }
 
     /// Load image from GPU texture data
@@ -899,16 +984,6 @@ pub const Image = extern struct {
     /// Unload image from CPU memory (RAM)
     pub fn unload(self: Image) void {
         rl.unloadImage(self);
-    }
-
-    /// Create an image from text (default font)
-    pub fn initText(text: [:0]const u8, fontSize: i32, color: Color) RaylibError!Image {
-        return rl.imageText(text, fontSize, color);
-    }
-
-    /// Create an image from text (custom sprite font)
-    pub fn initTextEx(font: Font, text: [:0]const u8, fontSize: f32, spacing: f32, t: Color) RaylibError!Image {
-        return rl.imageTextEx(font, text, fontSize, spacing, t);
     }
 
     /// Generate image: plain color
@@ -966,6 +1041,11 @@ pub const Image = extern struct {
         return rl.imageFromImage(self, rec);
     }
 
+    /// Create an image from a selected channel of another image (GRAYSCALE)
+    pub fn copyChannel(self: Image, selectedChannel: i32) Image {
+        return rl.imageFromChannel(self, selectedChannel);
+    }
+
     /// Convert image data to desired format
     pub fn setFormat(self: *Image, newFormat: PixelFormat) void {
         return rl.imageFormat(self, newFormat);
@@ -1004,6 +1084,11 @@ pub const Image = extern struct {
     /// Apply Gaussian blur using a box blur approximation
     pub fn blurGaussian(self: *Image, blurSize: i32) void {
         rl.imageBlurGaussian(self, blurSize);
+    }
+
+    // Apply custom square convolution kernel to image
+    pub fn kernelConvolution(self: *Image, kernel: []const f32) void {
+        rl.imageKernelConvolution(self, kernel);
     }
 
     /// Resize image (Bicubic scaling algorithm)
@@ -1121,6 +1206,11 @@ pub const Image = extern struct {
         rl.imageDrawLineV(self, start, end, color);
     }
 
+    /// Draw a line defining thickness within an image
+    pub fn drawLineEx(self: *Image, start: Vector2, end: Vector2, thick: i32, color: Color) void {
+        rl.imageDrawLineEx(self, start, end, thick, color);
+    }
+
     /// Draw a filled circle within an image
     pub fn drawCircle(self: *Image, centerX: i32, centerY: i32, radius: i32, color: Color) void {
         rl.imageDrawCircle(self, centerX, centerY, radius, color);
@@ -1161,6 +1251,31 @@ pub const Image = extern struct {
         rl.imageDrawRectangleLines(self, rec, thick, color);
     }
 
+    /// Draw triangle within an image
+    pub fn drawTriangle(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) void {
+        rl.imageDrawTriangle(self, v1, v2, v3, color);
+    }
+
+    /// Draw triangle with interpolated colors within an image
+    pub fn drawTriangleEx(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, c1: Color, c2: Color, c3: Color) void {
+        rl.imageDrawTriangleEx(self, v1, v2, v3, c1, c2, c3);
+    }
+
+    /// Draw triangle outline within an image
+    pub fn drawTriangleLines(self: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) void {
+        rl.imageDrawTriangleLines(self, v1, v2, v3, color);
+    }
+
+    /// Draw a triangle fan defined by points within an image (first vertex is the center)
+    pub fn drawTriangleFan(self: *Image, points: []const Vector2, pointCount: i32, color: Color) void {
+        rl.imageDrawTriangleFan(self, points, pointCount, color);
+    }
+
+    /// Draw a triangle strip defined by points within an image
+    pub fn drawTriangleStrip(self: *Image, points: []const Vector2, pointCount: i32, color: Color) void {
+        rl.imageDrawTriangleStrip(self, points, pointCount, color);
+    }
+
     /// Draw a source image within a destination image (tint applied to source)
     pub fn drawImage(self: *Image, src: Image, srcRec: Rectangle, dstRec: Rectangle, t: Color) void {
         rl.imageDraw(self, src, srcRec, dstRec, t);
@@ -1181,6 +1296,11 @@ pub const Image = extern struct {
         return rl.exportImage(self, fileName);
     }
 
+    /// Export image to memory buffer
+    pub fn exportToMemory(self: Image, fileType: []const u8) RaylibError![]u8 {
+        return rl.exportImageToMemory(self, fileType);
+    }
+
     /// Export image as code file defining an array of bytes, returns true on success
     pub fn exportAsCode(self: Image, fileName: [:0]const u8) bool {
         return rl.exportImageAsCode(self, fileName);
@@ -1199,6 +1319,11 @@ pub const Image = extern struct {
     pub fn asCubemap(self: Image, layout: CubemapLayout) RaylibError!Texture {
         return Texture.fromCubemap(self, layout);
     }
+
+    /// Check if an image is valid (data and parameters)
+    pub fn isValid(self: Image) bool {
+        return rl.isImageValid(self);
+    }
 };
 
 pub const Texture = extern struct {
@@ -1208,6 +1333,7 @@ pub const Texture = extern struct {
     mipmaps: c_int,
     format: PixelFormat,
 
+    /// Load texture from file into GPU memory (VRAM)
     pub fn init(fileName: [:0]const u8) RaylibError!Texture {
         return rl.loadTexture(fileName);
     }
@@ -1225,6 +1351,16 @@ pub const Texture = extern struct {
     /// Unload texture from GPU memory (VRAM)
     pub fn unload(self: Texture) void {
         rl.unloadTexture(self);
+    }
+
+    /// Update GPU texture with new data (pixels should be able to fill texture)
+    pub fn update(self: Texture, pixels: *const anyopaque) void {
+        return rl.updateTexture(self, pixels);
+    }
+
+    /// Update GPU texture rectangle with new data (pixels and rec should fit in texture)
+    pub fn updateRec(self: Texture, rec: Rectangle, pixels: *const anyopaque) void {
+        rl.updateTextureRec(self, rec, pixels);
     }
 
     /// Draw a Texture2D
@@ -1256,6 +1392,31 @@ pub const Texture = extern struct {
     pub fn drawNPatch(self: Texture, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: f32, tint: Color) void {
         rl.drawTextureNPatch(self, nPatchInfo, dest, origin, rotation, tint);
     }
+
+    /// Set texture and rectangle to be used on shapes drawing
+    pub fn setShapesTexture(self: Texture, source: Rectangle) void {
+        return rl.setShapesTexture(self, source);
+    }
+
+    /// Set texture scaling filter mode
+    pub fn setFilter(self: Texture, filter: TextureFilter) void {
+        return rl.setTextureFilter(self, filter);
+    }
+
+    /// Set texture wrapping mode
+    pub fn setWrap(self: Texture, wrap: TextureWrap) void {
+        return rl.setTextureWrap(self, wrap);
+    }
+
+    /// Generate GPU mipmaps for a texture
+    pub fn genMipmaps(self: *Texture) void {
+        return rl.genTextureMipmaps(self);
+    }
+
+    /// Check if a texture is valid (loaded in GPU)
+    pub fn isValid(self: Texture) bool {
+        return rl.isTextureValid(self);
+    }
 };
 pub const Texture2D = Texture;
 pub const TextureCubemap = Texture;
@@ -1265,6 +1426,7 @@ pub const RenderTexture = extern struct {
     texture: Texture,
     depth: Texture,
 
+    /// Load texture for rendering (framebuffer)
     pub fn init(width: i32, height: i32) RaylibError!RenderTexture {
         return rl.loadRenderTexture(width, height);
     }
@@ -1275,13 +1437,18 @@ pub const RenderTexture = extern struct {
     }
 
     /// Begin drawing to render texture
-    pub fn begin(self: RenderTexture2D) void {
+    pub fn begin(self: RenderTexture) void {
         rl.beginTextureMode(self);
     }
 
     /// Ends drawing to render texture
-    pub fn end(_: RenderTexture2D) void {
+    pub fn end(_: RenderTexture) void {
         rl.endTextureMode();
+    }
+
+    /// Check if a render texture is valid (loaded in GPU)
+    pub fn isValid(self: RenderTexture) bool {
+        return rl.isRenderTextureValid(self);
     }
 };
 pub const RenderTexture2D = RenderTexture;
@@ -1310,6 +1477,11 @@ pub const Font = extern struct {
     texture: Texture2D,
     recs: [*c]Rectangle,
     glyphs: [*c]GlyphInfo,
+
+    /// Get the default Font
+    pub fn getDefault() RaylibError!Font {
+        return rl.getFontDefault();
+    }
 
     /// Load font from file into GPU memory (VRAM)
     pub fn init(fileName: [:0]const u8) RaylibError!Font {
@@ -1345,6 +1517,46 @@ pub const Font = extern struct {
     pub fn exportAsCode(self: Font, fileName: [:0]const u8) bool {
         return rl.exportFontAsCode(self, fileName);
     }
+
+    /// Measure string size for Font
+    pub fn measureTextEx(self: Font, text: [:0]const u8, fontSize: f32, spacing: f32) Vector2 {
+        return rl.measureTextEx(self, text, fontSize, spacing);
+    }
+
+    /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphIndex(self: Font, codepoint: i32) i32 {
+        return rl.getGlyphIndex(self, codepoint);
+    }
+
+    /// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphInfo(self: Font, codepoint: i32) GlyphInfo {
+        return rl.getGlyphInfo(self, codepoint);
+    }
+
+    /// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
+    pub fn getGlyphAtlasRec(self: Font, codepoint: i32) Rectangle {
+        return rl.getGlyphAtlasRec(self, codepoint);
+    }
+
+    /// Draw text using font and additional parameters
+    pub fn drawTextEx(self: Font, text: [:0]const u8, position: Vector2, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextEx(self, text, position, fontSize, spacing, tint);
+    }
+
+    /// Draw text using Font and pro parameters (rotation)
+    pub fn drawTextPro(self: Font, text: [:0]const u8, position: Vector2, origin: Vector2, rotation: f32, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextPro(self, text, position, origin, rotation, fontSize, spacing, tint);
+    }
+
+    /// Draw one character (codepoint)
+    pub fn drawTextCodepoint(self: Font, codepoint: i32, position: Vector2, fontSize: f32, tint: Color) void {
+        return rl.drawTextCodepoint(self, codepoint, position, fontSize, tint);
+    }
+
+    /// Draw multiple character (codepoint)
+    pub fn drawTextCodepoints(self: Font, codepoints: []const c_int, position: Vector2, fontSize: f32, spacing: f32, tint: Color) void {
+        return rl.drawTextCodepoints(self, codepoints, position, fontSize, spacing, tint);
+    }
 };
 
 pub const Camera3D = extern struct {
@@ -1362,6 +1574,11 @@ pub const Camera3D = extern struct {
     /// Update camera position for selected mode
     pub fn update(self: *Camera3D, mode: CameraMode) void {
         rl.updateCamera(self, mode);
+    }
+
+    /// Update camera movement/rotation
+    pub fn updatePro(self: *Camera3D, movement: Vector3, rotation: Vector3, zoom: f32) void {
+        rl.updateCameraPro(self, movement, rotation, zoom);
     }
 
     /// Get camera transform matrix (view matrix)
@@ -1408,28 +1625,112 @@ pub const Mesh = extern struct {
     tangents: [*c]f32,
     colors: [*c]u8,
     indices: [*c]c_ushort,
+    boneCount: c_int,
+    boneIndices: [*c]u8,
+    boneWeights: [*c]f32,
     animVertices: [*c]f32,
     animNormals: [*c]f32,
-    boneIds: [*c]u8,
-    boneWeights: [*c]f32,
-    boneMatrices: [*c]Matrix,
-    boneCount: c_int,
-    vaoId: c_int,
-    vboId: [*c]c_int,
+    vaoId: c_uint,
+    vboId: [*c]c_uint,
+
+    /// Generate polygonal mesh
+    pub fn genPoly(sides: i32, radius: f32) Mesh {
+        return rl.genMeshPoly(sides, radius);
+    }
+
+    /// Generate plane mesh (with subdivisions)
+    pub fn genPlane(width: f32, length: f32, resX: i32, resZ: i32) Mesh {
+        return rl.genMeshPlane(width, length, resX, resZ);
+    }
+
+    /// Generate cuboid mesh
+    pub fn genCube(width: f32, height: f32, length: f32) Mesh {
+        return rl.genMeshCube(width, height, length);
+    }
+
+    /// Generate sphere mesh (standard sphere)
+    pub fn genSphere(radius: f32, rings: i32, slices: i32) Mesh {
+        return rl.genMeshSphere(radius, rings, slices);
+    }
+
+    /// Generate half-sphere mesh (no bottom cap)
+    pub fn genHemiSphere(radius: f32, rings: i32, slices: i32) Mesh {
+        return rl.genMeshHemiSphere(radius, rings, slices);
+    }
+
+    /// Generate cylinder mesh
+    pub fn genCylinder(radius: f32, height: f32, slices: i32) Mesh {
+        return rl.genMeshCylinder(radius, height, slices);
+    }
+
+    /// Generate cone/pyramid mesh
+    pub fn genCone(radius: f32, height: f32, slices: i32) Mesh {
+        return rl.genMeshCone(radius, height, slices);
+    }
+
+    /// Generate torus mesh
+    pub fn genTorus(radius: f32, size: f32, radSeg: i32, sides: i32) Mesh {
+        return rl.genMeshTorus(radius, size, radSeg, sides);
+    }
+
+    /// Generate trefoil knot mesh
+    pub fn genKnot(radius: f32, size: f32, radSeg: i32, sides: i32) Mesh {
+        return rl.genMeshKnot(radius, size, radSeg, sides);
+    }
+
+    /// Generate heightmap mesh from image data
+    pub fn genHeightmap(heightmap: Image, size: Vector3) Mesh {
+        return rl.genMeshHeightmap(heightmap, size);
+    }
+
+    /// Generate cubes-based map mesh from image data
+    pub fn genCubicmap(cubicmap: Image, cubeSize: Vector3) Mesh {
+        return rl.genMeshCubicmap(cubicmap, cubeSize);
+    }
+
+    /// Export mesh data to file, returns true on success
+    pub fn exportToFile(self: Mesh, fileName: [:0]const u8) bool {
+        return rl.exportMesh(self, fileName);
+    }
+
+    /// Export mesh as code file (.h) defining multiple arrays of vertex attributes
+    pub fn exportToFileAsCode(self: Mesh, fileName: [:0]const u8) bool {
+        return rl.exportMeshAsCode(self, fileName);
+    }
 
     /// Draw a 3d mesh with material and transform
     pub fn draw(self: Mesh, material: Material, transform: Matrix) void {
-        rl.drawMesh(self, material, transform);
+        return rl.drawMesh(self, material, transform);
     }
 
     /// Draw multiple mesh instances with material and different transforms
     pub fn drawInstanced(self: Mesh, material: Material, transforms: []const Matrix) void {
-        rl.drawMeshInstanced(self, material, transforms);
+        return rl.drawMeshInstanced(self, material, transforms);
+    }
+
+    /// Upload mesh vertex data in GPU and provide VAO/VBO ids
+    pub fn upload(self: *Mesh, dynamic: bool) void {
+        return rl.uploadMesh(self, dynamic);
+    }
+
+    /// Update mesh vertex data in GPU for a specific buffer index
+    pub fn updateBuffer(self: Mesh, index: i32, data: *const anyopaque, dataSize: i32, offset: i32) void {
+        return rl.updateMeshBuffer(self, index, data, dataSize, offset);
+    }
+
+    /// Compute mesh tangents
+    pub fn genTangents(self: *Mesh) void {
+        return rl.genMeshTangents(self);
+    }
+
+    /// Compute mesh bounding box limits
+    pub fn getBoundingBox(self: Mesh) BoundingBox {
+        return rl.getMeshBoundingBox(self);
     }
 
     /// Unload mesh data from CPU and GPU
     pub fn unload(self: Mesh) void {
-        rl.unloadMesh(self);
+        return rl.unloadMesh(self);
     }
 };
 
@@ -1437,19 +1738,64 @@ pub const Shader = extern struct {
     id: c_uint,
     locs: [*c]c_int,
 
+    /// Load shader from files and bind default locations
+    pub fn loadFromFile(vsFileName: ?[:0]const u8, fsFileName: ?[:0]const u8) RaylibError!Shader {
+        return rl.loadShader(vsFileName, fsFileName);
+    }
+
+    /// Load shader from code strings and bind default locations
+    pub fn loadFromMemory(vsCode: ?[:0]const u8, fsCode: ?[:0]const u8) RaylibError!Shader {
+        return rl.loadShaderFromMemory(vsCode, fsCode);
+    }
+
     /// Begin custom shader drawing
     pub fn activate(self: Shader) void {
-        rl.beginShaderMode(self);
+        return rl.beginShaderMode(self);
     }
 
     /// End custom shader drawing (use default shader)
     pub fn deactivate(_: Shader) void {
-        rl.endShaderMode();
+        return rl.endShaderMode();
+    }
+
+    /// Get shader uniform location
+    pub fn getLocation(self: Shader, uniformName: [:0]const u8) i32 {
+        return rl.getShaderLocation(self, uniformName);
+    }
+
+    /// Get shader attribute location
+    pub fn getLocationAttrib(self: Shader, attribName: [:0]const u8) i32 {
+        return rl.getShaderLocationAttrib(self, attribName);
+    }
+
+    /// Set shader uniform value
+    pub fn setValue(self: Shader, locIndex: i32, value: *const anyopaque, uniformType: ShaderUniformDataType) void {
+        return rl.setShaderValue(self, locIndex, value, uniformType);
+    }
+
+    /// Set shader uniform value vector
+    pub fn setValueV(self: Shader, locIndex: i32, value: *const anyopaque, uniformType: ShaderUniformDataType, count: i32) void {
+        return rl.setShaderValueV(self, locIndex, value, uniformType, count);
+    }
+
+    /// Set shader uniform value (matrix 4x4)
+    pub fn setValueMatrix(self: Shader, locIndex: i32, mat: Matrix) void {
+        return rl.setShaderValueMatrix(self, locIndex, mat);
+    }
+
+    /// Set shader uniform value and bind the texture (sampler2d)
+    pub fn setValueTexture(self: Shader, locIndex: i32, texture: Texture2D) void {
+        return rl.setShaderValueTexture(self, locIndex, texture);
     }
 
     /// Unload shader from GPU memory (VRAM)
     pub fn unload(self: Shader) void {
-        rl.unloadShader(self);
+        return rl.unloadShader(self);
+    }
+
+    /// Check if a shader is valid (loaded on GPU)
+    pub fn isValid(self: Shader) bool {
+        return rl.isShaderValid(self);
     }
 };
 
@@ -1464,9 +1810,29 @@ pub const Material = extern struct {
     maps: [*c]MaterialMap,
     params: [4]f32,
 
+    /// Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
+    pub fn loadDefault() RaylibError!Material {
+        return rl.loadMaterialDefault();
+    }
+
+    /// Load materials from model file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError![]Material {
+        return rl.loadMaterials(fileName);
+    }
+
     /// Unload material from GPU memory (VRAM)
     pub fn unload(self: Material) void {
-        rl.unloadMaterial(self);
+        return rl.unloadMaterial(self);
+    }
+
+    /// Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
+    pub fn setTexture(self: *Material, mapType: MaterialMapIndex, texture: Texture2D) void {
+        return rl.setMaterialTexture(self, mapType, texture);
+    }
+
+    /// Check if a material is valid (shader assigned, map textures loaded in GPU)
+    pub fn isValid(self: Material) bool {
+        return rl.isMaterialValid(self);
     }
 };
 
@@ -1475,10 +1841,17 @@ pub const Transform = extern struct {
     rotation: Quaternion,
     scale: Vector3,
 };
+pub const ModelAnimPose = [*c]Transform;
 
 pub const BoneInfo = extern struct {
     name: [32]u8,
     parent: c_int,
+};
+
+pub const ModelSkeleton = extern struct {
+    boneCount: c_int,
+    bones: [*c]BoneInfo,
+    bindPose: ModelAnimPose,
 };
 
 pub const Model = extern struct {
@@ -1488,9 +1861,9 @@ pub const Model = extern struct {
     meshes: [*c]Mesh,
     materials: [*c]Material,
     meshMaterial: [*c]c_int,
-    boneCount: c_int,
-    bones: [*c]BoneInfo,
-    bindPose: [*c]Transform,
+    skeleton: ModelSkeleton,
+    currentPose: ModelAnimPose,
+    boneMatrices: [*c]Matrix,
 
     /// Load model from file (meshes and materials)
     pub fn init(fileName: [:0]const u8) RaylibError!Model {
@@ -1526,24 +1899,98 @@ pub const Model = extern struct {
     pub fn drawWiresEx(self: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: f32, scale: Vector3, tint: Color) void {
         return rl.drawModelWiresEx(self, position, rotationAxis, rotationAngle, scale, tint);
     }
+
+    /// Draw a model as points
+    pub fn drawPoints(self: Model, position: Vector3, scale: f32, tint: Color) void {
+        return rl.drawModelPoints(self, position, scale, tint);
+    }
+
+    /// Draw a model as points with extended parameters
+    pub fn drawPointsEx(self: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: f32, scale: Vector3, tint: Color) void {
+        return rl.drawModelPointsEx(self, position, rotationAxis, rotationAngle, scale, tint);
+    }
+
+    /// Compute model bounding box limits (considers all meshes)
+    pub fn getBoundingBox(self: Model) BoundingBox {
+        return rl.getModelBoundingBox(self);
+    }
+
+    /// Set material for a mesh
+    pub fn setMeshMaterial(self: *Model, meshId: i32, materialId: i32) void {
+        return rl.setModelMeshMaterial(self, meshId, materialId);
+    }
+
+    /// Update model animation pose (vertex buffers and bone matrices)
+    pub fn updateAnimation(self: Model, anim: ModelAnimation, frame: f32) void {
+        return rl.updateModelAnimation(self, anim, frame);
+    }
+
+    /// Update model animation pose, blending two animations
+    pub fn updateAnimationEx(self: Model, animA: ModelAnimation, frameA: f32, animB: ModelAnimation, frameB: f32, blend: f32) void {
+        return rl.updateModelAnimationEx(self, animA, frameA, animB, frameB, blend);
+    }
+
+    /// Check if a model is valid (loaded in GPU, VAO/VBOs)
+    pub fn isValid(self: Model) bool {
+        return rl.isModelValid(self);
+    }
+
+    /// Check model animation skeleton match
+    pub fn isAnimationValid(self: Model, anim: ModelAnimation) bool {
+        return rl.isModelAnimationValid(self, anim);
+    }
 };
 
 pub const ModelAnimation = extern struct {
-    boneCount: c_int,
-    frameCount: c_int,
-    bones: [*c]BoneInfo,
-    framePoses: [*c][*c]Transform,
     name: [32]u8,
+    boneCount: c_int,
+    keyframeCount: c_int,
+    keyframePoses: [*c]ModelAnimPose,
+
+    /// Load model animations from file
+    pub fn loadFromFile(fileName: []const u8) RaylibError![]ModelAnimation {
+        return rl.loadModelAnimations(fileName);
+    }
 
     /// Unload animation data
-    pub fn unload(self: ModelAnimation) void {
-        rl.unloadModelAnimation(self);
+    pub fn unload(self: *ModelAnimation) void {
+        cdef.UnloadModelAnimations(@as([*c]ModelAnimation, @ptrCast(self)), 1);
     }
 };
 
 pub const Ray = extern struct {
     position: Vector3,
     direction: Vector3,
+
+    /// Draw a ray line
+    pub fn draw(self: Ray, color: Color) void {
+        rl.drawRay(self, color);
+    }
+
+    /// Get collision info between ray and box
+    pub fn getRayCollisionBox(self: Ray, box: BoundingBox) RayCollision {
+        return rl.getRayCollisionBox(self, box);
+    }
+
+    /// Get collision info between ray and sphere
+    pub fn getRayCollisionSphere(self: Ray, center: Vector3, radius: f32) RayCollision {
+        return rl.getRayCollisionSphere(self, center, radius);
+    }
+
+    /// Get collision info between ray and mesh
+    pub fn getRayCollisionMesh(self: Ray, mesh: Mesh, transform: Matrix) RayCollision {
+        return rl.getRayCollisionMesh(self, mesh, transform);
+    }
+
+    /// Get collision info between ray and triangle
+    pub fn getRayCollisionTriangle(self: Ray, p1: Vector3, p2: Vector3, p3: Vector3) RayCollision {
+        return rl.getRayCollisionTriangle(self, p1, p2, p3);
+    }
+
+    /// Get collision info between ray and quad
+    pub fn getRayCollisionQuad(self: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3) RayCollision {
+        return rl.getRayCollisionQuad(self, p1, p2, p3, p4);
+    }
 };
 
 pub const RayCollision = extern struct {
@@ -1556,6 +2003,21 @@ pub const RayCollision = extern struct {
 pub const BoundingBox = extern struct {
     min: Vector3,
     max: Vector3,
+
+    /// Draw bounding box (wires)
+    pub fn draw(self: BoundingBox, color: Color) void {
+        rl.drawBoundingBox(self, color);
+    }
+
+    /// Check collision between two bounding boxes
+    pub fn checkCollisionWithBox(self: BoundingBox, box2: BoundingBox) bool {
+        return rl.checkCollisionBoxes(self, box2);
+    }
+
+    /// Check collision between box and sphere
+    pub fn checkCollisionWithSphere(self: BoundingBox, center: Vector3, radius: f32) bool {
+        return rl.checkCollisionBoxSphere(self, center, radius);
+    }
 };
 
 pub const Wave = extern struct {
@@ -1565,9 +2027,49 @@ pub const Wave = extern struct {
     channels: c_uint,
     data: *anyopaque,
 
+    /// Load wave data from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Wave {
+        return rl.loadWave(fileName);
+    }
+
+    /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+    pub fn loadFromMemory(fileType: [:0]const u8, fileData: []const u8) RaylibError!Wave {
+        return rl.loadWaveFromMemory(fileType, fileData);
+    }
+
+    /// Export wave data to file, returns true on success
+    pub fn exportToFile(self: Wave, fileName: [:0]const u8) bool {
+        return rl.exportWave(self, fileName);
+    }
+
+    /// Export wave sample data to code (.h), returns true on success
+    pub fn exportToFileAsCode(self: Wave, fileName: [:0]const u8) bool {
+        return rl.exportWaveAsCode(self, fileName);
+    }
+
+    /// Copy a wave to a new wave
+    pub fn copy(self: Wave) Wave {
+        return rl.waveCopy(self);
+    }
+
+    /// Crop a wave to defined frames range
+    pub fn crop(self: *Wave, initFrame: i32, finalFrame: i32) void {
+        rl.waveCrop(self, initFrame, finalFrame);
+    }
+
+    /// Convert wave data to desired format
+    pub fn format(self: *Wave, sampleRate: i32, sampleSize: i32, channels: i32) void {
+        rl.waveFormat(self, sampleRate, sampleSize, channels);
+    }
+
     /// Unload wave data
     pub fn unload(self: Wave) void {
         rl.unloadWave(self);
+    }
+
+    /// Checks if wave data is valid (data loaded and parameters)
+    pub fn isValid(self: Wave) bool {
+        return rl.isWaveValid(self);
     }
 };
 
@@ -1581,9 +2083,84 @@ pub const AudioStream = extern struct {
     sampleSize: c_uint,
     channels: c_uint,
 
+    /// Load audio stream (to stream raw audio pcm data)
+    pub fn load(sampleRate: u32, sampleSize: u32, channels: u32) RaylibError!AudioStream {
+        return rl.loadAudioStream(sampleRate, sampleSize, channels);
+    }
+
     /// Unload audio stream and free memory
     pub fn unload(self: AudioStream) void {
         rl.unloadAudioStream(self);
+    }
+
+    /// Play audio stream
+    pub fn play(self: AudioStream) void {
+        rl.playAudioStream(self);
+    }
+
+    /// Pause audio stream
+    pub fn pause(self: AudioStream) void {
+        rl.pauseAudioStream(self);
+    }
+
+    /// Resume audio stream
+    pub fn @"resume"(self: AudioStream) void {
+        rl.resumeAudioStream(self);
+    }
+
+    /// Stop audio stream
+    pub fn stop(self: AudioStream) void {
+        rl.stopAudioStream(self);
+    }
+
+    /// Update audio stream buffers with data
+    pub fn update(self: AudioStream, data: *const anyopaque, frameCount: i32) void {
+        rl.updateAudioStream(self, data, frameCount);
+    }
+
+    /// Set volume for audio stream (1.0 is max level)
+    pub fn setVolume(self: AudioStream, volume: f32) void {
+        rl.setAudioStreamVolume(self, volume);
+    }
+
+    /// Set pitch for audio stream (1.0 is base level)
+    pub fn setPitch(self: AudioStream, pitch: f32) void {
+        rl.setAudioStreamPitch(self, pitch);
+    }
+
+    /// Set pan for audio stream (0.5 is centered)
+    pub fn setPan(self: AudioStream, pan: f32) void {
+        rl.setAudioStreamPan(self, pan);
+    }
+
+    /// Audio thread callback to request new data
+    pub fn setCallback(self: AudioStream, callback: AudioCallback) void {
+        rl.setAudioStreamCallback(self, callback);
+    }
+
+    /// Attach audio stream processor to stream, receives frames x 2 samples as 'float' (stereo)
+    pub fn attachProcessor(self: AudioStream, processor: AudioCallback) void {
+        rl.attachAudioStreamProcessor(self, processor);
+    }
+
+    /// Detach audio stream processor from stream
+    pub fn detachProcessor(self: AudioStream, processor: AudioCallback) void {
+        rl.detachAudioStreamProcessor(self, processor);
+    }
+
+    /// Checks if an audio stream is valid (buffers initialized)
+    pub fn isValid(self: AudioStream) bool {
+        return rl.isAudioStreamValid(self);
+    }
+
+    /// Check if any audio stream buffers requires refill
+    pub fn isProcessed(self: AudioStream) bool {
+        return rl.isAudioStreamProcessed(self);
+    }
+
+    /// Check if audio stream is playing
+    pub fn isPlaying(self: AudioStream) bool {
+        return rl.isAudioStreamPlaying(self);
     }
 };
 
@@ -1591,9 +2168,79 @@ pub const Sound = extern struct {
     stream: AudioStream,
     frameCount: c_uint,
 
+    /// Load sound from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Sound {
+        return rl.loadSound(fileName);
+    }
+
+    /// Load sound from wave data
+    pub fn loadFromWave(wave: Wave) Sound {
+        return rl.loadSoundFromWave(wave);
+    }
+
+    /// Create a new sound that shares the same sample data as the source sound, does not own the sound data
+    pub fn loadAlias(self: Sound) Sound {
+        return rl.loadSoundAlias(self);
+    }
+
     /// Unload sound
     pub fn unload(self: Sound) void {
         rl.unloadSound(self);
+    }
+
+    /// Unload a sound alias (does not deallocate sample data)
+    pub fn unloadAlias(self: Sound) void {
+        rl.unloadSoundAlias(self);
+    }
+
+    /// Play a sound
+    pub fn play(self: Sound) void {
+        rl.playSound(self);
+    }
+
+    /// Pause a sound
+    pub fn pause(self: Sound) void {
+        rl.pauseSound(self);
+    }
+
+    /// Resume a paused sound
+    pub fn @"resume"(self: Sound) void {
+        rl.resumeSound(self);
+    }
+
+    /// Stop playing a sound
+    pub fn stop(self: Sound) void {
+        rl.stopSound(self);
+    }
+
+    /// Update sound buffer with new data (data and frame count should fit in sound)
+    pub fn update(self: Sound, data: *const anyopaque, sampleCount: i32) void {
+        rl.updateSound(self, data, sampleCount);
+    }
+
+    /// Set volume for a sound (1.0 is max level)
+    pub fn setVolume(self: Sound, volume: f32) void {
+        rl.setSoundVolume(self, volume);
+    }
+
+    /// Set pitch for a sound (1.0 is base level)
+    pub fn setPitch(self: Sound, pitch: f32) void {
+        rl.setSoundPitch(self, pitch);
+    }
+
+    /// Set pan for a sound (0.5 is center)
+    pub fn setPan(self: Sound, pan: f32) void {
+        rl.setSoundPan(self, pan);
+    }
+
+    /// Checks if a sound is valid (data loaded and buffers initialized)
+    pub fn isValid(self: Sound) bool {
+        return rl.isSoundValid(self);
+    }
+
+    /// Check if a sound is currently playing
+    pub fn isPlaying(self: Sound) bool {
+        return rl.isSoundPlaying(self);
     }
 };
 
@@ -1601,12 +2248,87 @@ pub const Music = extern struct {
     stream: AudioStream,
     frameCount: c_uint,
     looping: bool,
-    ctxType: c_int,
+    ctxType: MusicContextType,
     ctxData: *anyopaque,
+
+    /// Load music stream from file
+    pub fn loadFromFile(fileName: [:0]const u8) RaylibError!Music {
+        return rl.loadMusicStream(fileName);
+    }
+
+    /// Load music stream from data
+    pub fn loadFromMemory(fileType: [:0]const u8, data: []const u8) RaylibError!Music {
+        return rl.loadMusicStreamFromMemory(fileType, data);
+    }
+
+    /// Start music playing
+    pub fn play(self: Music) void {
+        rl.playMusicStream(self);
+    }
+
+    /// Pause music playing
+    pub fn pause(self: Music) void {
+        rl.pauseMusicStream(self);
+    }
+
+    /// Resume playing paused music
+    pub fn @"resume"(self: Music) void {
+        rl.resumeMusicStream(self);
+    }
+
+    /// Stop music playing
+    pub fn stop(self: Music) void {
+        rl.stopMusicStream(self);
+    }
+
+    /// Updates buffers for music streaming
+    pub fn update(self: Music) void {
+        rl.updateMusicStream(self);
+    }
+
+    /// Seek music to a position (in seconds)
+    pub fn seek(self: Music, position: f32) void {
+        rl.seekMusicStream(self, position);
+    }
+
+    /// Set volume for music (1.0 is max level)
+    pub fn setVolume(self: Music, volume: f32) void {
+        rl.setMusicVolume(self, volume);
+    }
+
+    /// Set pitch for music (1.0 is base level)
+    pub fn setPitch(self: Music, pitch: f32) void {
+        rl.setMusicPitch(self, pitch);
+    }
+
+    /// Set pan for a music (0.5 is center)
+    pub fn setPan(self: Music, pan: f32) void {
+        rl.setMusicPan(self, pan);
+    }
 
     /// Unload music stream
     pub fn unload(self: Music) void {
         rl.unloadMusicStream(self);
+    }
+
+    /// Get music time length (in seconds)
+    pub fn getTimeLength(self: Music) f32 {
+        return rl.getMusicTimeLength(self);
+    }
+
+    /// Get current music time played (in seconds)
+    pub fn getTimePlayed(self: Music) f32 {
+        return rl.getMusicTimePlayed(self);
+    }
+
+    /// Checks if a music stream is valid (context and buffers initialized)
+    pub fn isValid(self: Music) bool {
+        return rl.isMusicValid(self);
+    }
+
+    /// Check if music is playing
+    pub fn isPlaying(self: Music) bool {
+        return rl.isMusicStreamPlaying(self);
     }
 };
 
@@ -1633,22 +2355,81 @@ pub const VrStereoConfig = extern struct {
     scale: [2]f32,
     scaleIn: [2]f32,
 
+    /// Load VR stereo config for VR simulator device parameters
+    pub fn load(deviceInfo: VrDeviceInfo) VrStereoConfig {
+        return rl.loadVrStereoConfig(deviceInfo);
+    }
+
     /// Unload VR stereo config
     pub fn unload(self: VrStereoConfig) void {
         rl.unloadVrStereoConfig(self);
     }
+
+    /// Begin stereo rendering (requires VR simulator)
+    pub fn begin(self: VrStereoConfig) void {
+        return rl.beginVrStereoMode(self);
+    }
+
+    /// End stereo rendering (requires VR simulator)
+    pub fn end(_: VrStereoConfig) void {
+        return rl.endVrStereoMode();
+    }
 };
 
 pub const FilePathList = extern struct {
-    capacity: c_uint,
     count: c_uint,
     paths: [*c][*c]u8,
+
+    /// Load directory files into FilePathList
+    pub fn loadDirFiles(dirPath: [:0]const u8) FilePathList {
+        return rl.loadDirectoryFiles(dirPath);
+    }
+
+    /// Load directory files into FilePathList
+    pub fn loadDirFilesEx(basePath: [:0]const u8, filter: [:0]const u8, scanSubdirs: bool) FilePathList {
+        return rl.loadDirectoryFilesEx(basePath, filter, scanSubdirs);
+    }
+
+    /// Unload filepaths
+    pub fn unloadDirFiles(self: FilePathList) void {
+        return rl.unloadDirectoryFiles(self);
+    }
+
+    /// Load dropped filepaths
+    pub fn loadDroppedFiles() FilePathList {
+        return rl.loadDroppedFiles();
+    }
+
+    /// Unload dropped filepaths
+    pub fn unloadDroppedFiles(self: FilePathList) void {
+        return rl.unloadDroppedFiles(self);
+    }
 };
 
 pub const AutomationEvent = extern struct {
     frame: c_uint,
     type: c_uint,
     params: [4]c_int,
+
+    /// Play a recorded automation event
+    pub fn play(self: AutomationEvent) void {
+        return rl.playAutomationEvent(self);
+    }
+
+    /// Set automation event internal base frame to start recording
+    pub fn setBaseFrame(frame: i32) void {
+        return rl.setAutomationEventBaseFrame(frame);
+    }
+
+    /// Start recording automation events (AutomationEventList must be set)
+    pub fn startRecording() void {
+        return rl.startAutomationEventRecording();
+    }
+
+    /// Stop recording automation events
+    pub fn stopRecording() void {
+        return rl.stopAutomationEventRecording();
+    }
 };
 
 pub const AutomationEventList = extern struct {
@@ -1656,9 +2437,24 @@ pub const AutomationEventList = extern struct {
     count: c_uint,
     events: [*c]AutomationEvent,
 
+    /// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
+    pub fn load(fileName: [:0]const u8) AutomationEventList {
+        return rl.loadAutomationEventList(fileName);
+    }
+
     /// Unload automation events list from file
     pub fn unload(self: AutomationEventList) void {
-        rl.unloadAutomationEventList(self);
+        return rl.unloadAutomationEventList(self);
+    }
+
+    /// Set automation event list to record to
+    pub fn use(self: *AutomationEventList) void {
+        return rl.setAutomationEventList(self);
+    }
+
+    /// Export automation events list as text file
+    pub fn exportToFile(self: AutomationEventList, fileName: [:0]const u8) bool {
+        return rl.exportAutomationEventList(self, fileName);
     }
 };
 
@@ -1706,6 +2502,17 @@ pub const TraceLogLevel = enum(c_int) {
     err = 5,
     fatal = 6,
     none = 7,
+};
+
+pub const MusicContextType = enum(c_int) {
+    none = 0,
+    wav = 1,
+    ogg = 2,
+    flac = 3,
+    mp3 = 4,
+    qoa = 5,
+    xm = 6,
+    mod = 7,
 };
 
 pub const KeyboardKey = enum(c_int) {
@@ -2048,7 +2855,7 @@ pub const NPatchType = enum(c_int) {
     three_patch_horizontal = 2,
 };
 
-// pub const TraceLogCallback = ?fn (c_int, [*c]const u8, [*c]struct___va_list_tag) callconv(C) void;
+pub const TraceLogCallback = *const fn (c_int, [*c]const u8, std.builtin.VaList) callconv(C) void;
 pub const LoadFileDataCallback = *const fn ([*c]const u8, [*c]c_uint) callconv(C) [*c]u8;
 pub const SaveFileDataCallback = *const fn ([*c]const u8, ?*anyopaque, c_uint) callconv(C) bool;
 pub const LoadFileTextCallback = *const fn ([*c]const u8) callconv(C) [*c]u8;

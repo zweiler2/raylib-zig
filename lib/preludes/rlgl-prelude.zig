@@ -17,7 +17,7 @@ pub const rlVertexBuffer = extern struct {
     texcoords: [*c]f32,
     normals: [*c]f32,
     colors: [*c]u8,
-    indices: [*c]c_ushort,
+    indices: [*c]c_ushort, // TODO: Integrate it with the build system, to decide if this should be a [*c]c_int instead
     vaoId: c_uint,
     vboId: [5]c_uint,
 };
@@ -187,7 +187,7 @@ pub const rlCullMode = enum(c_uint) {
     rl_cull_face_back = 1,
 };
 
-pub const rl_default_batch_buffer_elements = @as(i32, 8192);
+pub const rl_default_batch_buffer_elements = @as(i32, 8192); // TODO: Integrate it with the build system, to decide if this should be @as(i32, 2048) instead
 pub const rl_default_batch_buffers = @as(i32, 1);
 pub const rl_default_batch_drawcalls = @as(i32, 256);
 pub const rl_default_batch_max_texture_units = @as(i32, 4);
@@ -195,10 +195,12 @@ pub const rl_max_matrix_stack_size = @as(i32, 32);
 pub const rl_max_shader_locations = @as(i32, 32);
 pub const rl_cull_distance_near = @as(f64, 0.05);
 pub const rl_cull_distance_far = @as(f64, 4000.0);
+
 pub const rl_texture_wrap_s = @as(i32, 0x2802);
 pub const rl_texture_wrap_t = @as(i32, 0x2803);
 pub const rl_texture_mag_filter = @as(i32, 0x2800);
 pub const rl_texture_min_filter = @as(i32, 0x2801);
+
 pub const rl_texture_filter_nearest = @as(i32, 0x2600);
 pub const rl_texture_filter_linear = @as(i32, 0x2601);
 pub const rl_texture_filter_mip_nearest = @as(i32, 0x2700);
@@ -207,18 +209,23 @@ pub const rl_texture_filter_linear_mip_nearest = @as(i32, 0x2701);
 pub const rl_texture_filter_mip_linear = @as(i32, 0x2703);
 pub const rl_texture_filter_anisotropic = @as(i32, 0x3000);
 pub const rl_texture_mipmap_bias_ratio = @as(i32, 0x4000);
+
 pub const rl_texture_wrap_repeat = @as(i32, 0x2901);
 pub const rl_texture_wrap_clamp = @as(i32, 0x812f);
 pub const rl_texture_wrap_mirror_repeat = @as(i32, 0x8370);
 pub const rl_texture_wrap_mirror_clamp = @as(i32, 0x8742);
+
 pub const rl_modelview = @as(i32, 0x1700);
 pub const rl_projection = @as(i32, 0x1701);
 pub const rl_texture = @as(i32, 0x1702);
+
 pub const rl_lines = @as(i32, 0x0001);
 pub const rl_triangles = @as(i32, 0x0004);
 pub const rl_quads = @as(i32, 0x0007);
+
 pub const rl_unsigned_byte = @as(i32, 0x1401);
 pub const rl_float = @as(i32, 0x1406);
+
 pub const rl_stream_draw = @as(i32, 0x88e0);
 pub const rl_stream_read = @as(i32, 0x88e1);
 pub const rl_stream_copy = @as(i32, 0x88e2);
@@ -228,9 +235,11 @@ pub const rl_static_copy = @as(i32, 0x88e6);
 pub const rl_dynamic_draw = @as(i32, 0x88e8);
 pub const rl_dynamic_read = @as(i32, 0x88e9);
 pub const rl_dynamic_copy = @as(i32, 0x88ea);
+
 pub const rl_fragment_shader = @as(i32, 0x8b30);
 pub const rl_vertex_shader = @as(i32, 0x8b31);
 pub const rl_compute_shader = @as(i32, 0x91b9);
+
 pub const rl_zero = @as(i32, 0);
 pub const rl_one = @as(i32, 1);
 pub const rl_src_color = @as(i32, 0x0300);
@@ -246,6 +255,7 @@ pub const rl_constant_color = @as(i32, 0x8001);
 pub const rl_one_minus_constant_color = @as(i32, 0x8002);
 pub const rl_constant_alpha = @as(i32, 0x8003);
 pub const rl_one_minus_constant_alpha = @as(i32, 0x8004);
+
 pub const rl_func_add = @as(i32, 0x8006);
 pub const rl_min = @as(i32, 0x8007);
 pub const rl_max = @as(i32, 0x8008);
@@ -259,8 +269,10 @@ pub const rl_blend_src_rgb = @as(i32, 0x80c9);
 pub const rl_blend_dst_alpha = @as(i32, 0x80ca);
 pub const rl_blend_src_alpha = @as(i32, 0x80cb);
 pub const rl_blend_color = @as(i32, 0x8005);
+
 pub const rl_read_framebuffer = @as(i32, 0x8ca8);
 pub const rl_draw_framebuffer = @as(i32, 0x8ca9);
+
 pub const rl_default_shader_attrib_location_position = @as(i32, 0);
 pub const rl_default_shader_attrib_location_texcoord = @as(i32, 1);
 pub const rl_default_shader_attrib_location_normal = @as(i32, 2);
@@ -268,6 +280,6 @@ pub const rl_default_shader_attrib_location_color = @as(i32, 3);
 pub const rl_default_shader_attrib_location_tangent = @as(i32, 4);
 pub const rl_default_shader_attrib_location_texcoord2 = @as(i32, 5);
 pub const rl_default_shader_attrib_location_indices = @as(i32, 6);
-pub const rl_default_shader_attrib_location_boneids = @as(i32, 7);
-pub const rl_default_shader_attrib_location_boneweights = @as(i32, 5);
-pub const rl_default_shader_attrib_location_instance_tx = @as(i32, 9);
+pub const rl_default_shader_attrib_location_boneindices = @as(i32, 7);
+pub const rl_default_shader_attrib_location_boneweights = @as(i32, 8);
+pub const rl_default_shader_attrib_location_instancetransforms = @as(i32, 9);

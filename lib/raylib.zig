@@ -3939,26 +3939,6 @@ pub fn memFree(ptr: *anyopaque) void {
     cdef.MemFree(ptr);
 }
 
-/// Set custom file binary data loader
-pub fn setLoadFileDataCallback(callback: LoadFileDataCallback) void {
-    cdef.SetLoadFileDataCallback(callback);
-}
-
-/// Set custom file binary data saver
-pub fn setSaveFileDataCallback(callback: SaveFileDataCallback) void {
-    cdef.SetSaveFileDataCallback(callback);
-}
-
-/// Set custom file text data loader
-pub fn setLoadFileTextCallback(callback: LoadFileTextCallback) void {
-    cdef.SetLoadFileTextCallback(callback);
-}
-
-/// Set custom file text data saver
-pub fn setSaveFileTextCallback(callback: SaveFileTextCallback) void {
-    cdef.SetSaveFileTextCallback(callback);
-}
-
 /// Load file data as byte array (read)
 pub fn loadFileData(fileName: []const u8) RaylibError![]u8 {
     var _len: i32 = 0;
@@ -3985,6 +3965,26 @@ pub fn unloadFileText(text: [:0]u8) void {
 /// Save text data to file (write), string must be '\0' terminated, returns true on success
 pub fn saveFileText(fileName: [:0]const u8, text: [:0]const u8) bool {
     return cdef.SaveFileText(@as([*c]const u8, @ptrCast(fileName)), @as([*c]const u8, @ptrCast(text)));
+}
+
+/// Set custom file binary data loader
+pub fn setLoadFileDataCallback(callback: LoadFileDataCallback) void {
+    cdef.SetLoadFileDataCallback(callback);
+}
+
+/// Set custom file binary data saver
+pub fn setSaveFileDataCallback(callback: SaveFileDataCallback) void {
+    cdef.SetSaveFileDataCallback(callback);
+}
+
+/// Set custom file text data loader
+pub fn setLoadFileTextCallback(callback: LoadFileTextCallback) void {
+    cdef.SetLoadFileTextCallback(callback);
+}
+
+/// Set custom file text data saver
+pub fn setSaveFileTextCallback(callback: SaveFileTextCallback) void {
+    cdef.SetSaveFileTextCallback(callback);
 }
 
 /// Rename file (if exists)
