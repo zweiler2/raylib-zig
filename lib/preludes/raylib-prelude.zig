@@ -2742,7 +2742,7 @@ pub const ShaderUniformDataType = enum(c_int) {
     sampler2d = 8,
 };
 
-pub const ShaderAttribute = enum(c_int) {
+pub const ShaderAttributeDataType = enum(c_int) {
     float = 0,
     vec2 = 1,
     vec3 = 2,
