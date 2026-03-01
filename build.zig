@@ -16,7 +16,7 @@ const Program = struct {
     desc: []const u8,
 };
 
-fn getRaylib(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, options: Options) *std.Build.Step.Compile {
+fn getRaylib(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, options: Options) *std.Build.Dependency {
     const raylib_dep = b.dependency("raylib", .{
         .target = target,
         .optimize = optimize,
@@ -44,7 +44,7 @@ fn getRaylib(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     rl.addRaygui(b, raylib, raygui_dep, options);
 
     b.installArtifact(raylib);
-    return raylib;
+    return raylib_dep;
 }
 
 fn getModule(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) *std.Build.Module {
@@ -74,8 +74,13 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const raylib_artifact = this.getRaylib(b, target, optimize, Options.getOptions(b));
+    const raylib_dep = this.getRaylib(b, target, optimize, Options.getOptions(b));
+    const raylib_artifact = raylib_dep.artifact("raylib");
     const raylib = this.getModule(b, target, optimize);
+    const raygui_dep = b.dependency("raygui", .{
+        .target = target,
+        .optimize = optimize,
+    });
     const raygui = this.gui.getModule(b, target, optimize);
 
     raylib.linkLibrary(raylib_artifact);
@@ -424,6 +429,16 @@ pub fn build(b: *std.Build) !void {
     test_step.dependOn(&raygui_test.step);
 
     const examples_step = b.step("examples", "Builds all the examples");
+
+    const update_headers = b.step("update-headers", "Updates the headers");
+    const install_raylib_header = b.addInstallFileWithDir(raylib_dep.path("src/raylib.h"), .{ .custom = "../lib" }, "raylib.h");
+    update_headers.dependOn(&install_raylib_header.step);
+    const install_raygui_header = b.addInstallFileWithDir(raygui_dep.path("src/raygui.h"), .{ .custom = "lib" }, "raygui.h");
+    update_headers.dependOn(&install_raygui_header.step);
+    const install_raymath_header = b.addInstallFileWithDir(raylib_dep.path("src/raymath.h"), .{ .custom = "../lib" }, "raymath.h");
+    update_headers.dependOn(&install_raymath_header.step);
+    const install_rlgl_header = b.addInstallFileWithDir(raylib_dep.path("src/rlgl.h"), .{ .custom = "../lib" }, "rlgl.h");
+    update_headers.dependOn(&install_rlgl_header.step);
 
     for (examples) |ex| {
         const mod = b.createModule(.{
