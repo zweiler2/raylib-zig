@@ -2725,9 +2725,8 @@ pub const ShaderLocationIndex = enum(c_int) {
     map_brdf = 25,
     vertex_boneids = 26,
     vertex_boneweights = 27,
-    bone_matrices = 28,
-    shader_loc_vertex_instance_tx = 29,
-    //
+    matrix_bonetransforms = 28,
+    vertex_instancetransform = 29,
 };
 
 pub const ShaderUniformDataType = enum(c_int) {

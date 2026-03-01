@@ -345,16 +345,14 @@
 #ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_INDICES
     #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_INDICES     6
 #endif
-#ifdef SUPPORT_GPU_SKINNING
-    #ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEINDICES
-        #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEINDICES 7
-    #endif
-    #ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS
-        #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS 8
-    #endif
+#ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEINDICES
+    #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEINDICES 7
 #endif
-#ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORMS
-    #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORMS 9
+#ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS
+    #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS 8
+#endif
+#ifndef RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORM
+    #define RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORM 9
 #endif
 
 //----------------------------------------------------------------------------------
@@ -1018,8 +1016,8 @@ RLAPI void rlLoadDrawQuad(void);     // Load and draw a quad
 #ifndef RL_DEFAULT_SHADER_UNIFORM_NAME_BONEMATRICES
     #define RL_DEFAULT_SHADER_UNIFORM_NAME_BONEMATRICES "boneMatrices"   // Bound by default to shader location: RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEMATRICES
 #endif
-#ifndef RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORMS
-    #define RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORMS "instanceTransform" // Bound by default to shader location: RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORMS
+#ifndef RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORM
+    #define RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORM "instanceTransform" // Bound by default to shader location: RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORM
 #endif
 
 #ifndef RL_DEFAULT_SHADER_UNIFORM_NAME_MVP
@@ -1136,7 +1134,7 @@ typedef struct rlglData {
     } ExtSupported;     // Extensions supported flags
 } rlglData;
 
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
@@ -1146,7 +1144,7 @@ static double rlCullDistanceFar = RL_CULL_DISTANCE_FAR;
 
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
 static rlglData RLGL = { 0 };
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
 static bool isGpuReady = false;
 
 #if defined(GRAPHICS_API_OPENGL_ES2) && !defined(GRAPHICS_API_OPENGL_ES3)
@@ -1167,10 +1165,10 @@ static PFNGLVERTEXATTRIBDIVISOREXTPROC glVertexAttribDivisor = NULL;
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
 static void rlLoadShaderDefault(void);      // Load default shader
 static void rlUnloadShaderDefault(void);    // Unload default shader
-#if defined(RLGL_SHOW_GL_DETAILS_INFO)
+#if RLGL_SHOW_GL_DETAILS_INFO
 static const char *rlGetCompressedFormatName(int format); // Get compressed format official GL identifier name
-#endif  // RLGL_SHOW_GL_DETAILS_INFO
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif
+#endif
 
 static int rlGetPixelDataSize(int width, int height, int format);   // Get pixel data size in bytes (image or texture)
 
@@ -2212,7 +2210,7 @@ void rlSetBlendFactorsSeparate(int glSrcRGB, int glDstRGB, int glSrcAlpha, int g
 //----------------------------------------------------------------------------------
 // Module Functions Definition - OpenGL Debug
 //----------------------------------------------------------------------------------
-#if defined(RLGL_ENABLE_OPENGL_DEBUG_CONTEXT) && defined(GRAPHICS_API_OPENGL_43)
+#if defined(GRAPHICS_API_OPENGL_43) && RLGL_ENABLE_OPENGL_DEBUG_CONTEXT
 static void GLAPIENTRY rlDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
     // Ignore non-significant error/warning codes (NVidia drivers)
@@ -2278,8 +2276,8 @@ void rlglInit(int width, int height)
 {
     isGpuReady = true;
 
-    // Enable OpenGL debug context if required
-#if defined(RLGL_ENABLE_OPENGL_DEBUG_CONTEXT) && defined(GRAPHICS_API_OPENGL_43)
+    // Enable OpenGL debug context if requested (and supported)
+#if defined(GRAPHICS_API_OPENGL_43) && RLGL_ENABLE_OPENGL_DEBUG_CONTEXT
     if ((glDebugMessageCallback != NULL) && (glDebugMessageControl != NULL))
     {
         glDebugMessageCallback(rlDebugMessageCallback, 0);
@@ -2323,7 +2321,7 @@ void rlglInit(int width, int height)
     RLGL.State.projection = rlMatrixIdentity();
     RLGL.State.modelview = rlMatrixIdentity();
     RLGL.State.currentMatrix = &RLGL.State.modelview;
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
 
 #if defined(GRAPHICS_API_OPENGL_11_SOFTWARE)
     // Initialize software renderer backend
@@ -2407,7 +2405,7 @@ void rlLoadExtensions(void *loader)
     glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
     TRACELOG(RL_LOG_INFO, "GL: Supported extensions count: %i", numExt);
 
-#if defined(RLGL_SHOW_GL_DETAILS_INFO)
+#if RLGL_SHOW_GL_DETAILS_INFO
     // Get supported extensions list
     // WARNING: glGetStringi() not available on OpenGL 2.1
     TRACELOG(RL_LOG_INFO, "GL: OpenGL extensions:");
@@ -2449,7 +2447,7 @@ void rlLoadExtensions(void *loader)
     RLGL.ExtSupported.ssbo = GLAD_GL_ARB_shader_storage_buffer_object;
     #endif
 
-#endif  // GRAPHICS_API_OPENGL_33
+#endif // GRAPHICS_API_OPENGL_33
 
 #if defined(GRAPHICS_API_OPENGL_ES3)
     // Register supported extensions flags
@@ -2505,7 +2503,7 @@ void rlLoadExtensions(void *loader)
 
     TRACELOG(RL_LOG_INFO, "GL: Supported extensions count: %i", numExt);
 
-#if defined(RLGL_SHOW_GL_DETAILS_INFO)
+#if RLGL_SHOW_GL_DETAILS_INFO
     TRACELOG(RL_LOG_INFO, "GL: OpenGL extensions:");
     for (int i = 0; i < numExt; i++) TRACELOG(RL_LOG_INFO, "    %s", extList[i]);
 #endif
@@ -2615,7 +2613,7 @@ void rlLoadExtensions(void *loader)
     // Free extensions pointers
     RL_FREE(extList);
     RL_FREE(extensionsDup);    // Duplicated string must be deallocated
-#endif  // GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_ES2
 
     // Check OpenGL information and capabilities
     //------------------------------------------------------------------------------
@@ -2635,7 +2633,7 @@ void rlLoadExtensions(void *loader)
     #endif
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &RLGL.ExtSupported.maxAnisotropyLevel);
 
-#if defined(RLGL_SHOW_GL_DETAILS_INFO)
+#if RLGL_SHOW_GL_DETAILS_INFO
     // Show some OpenGL GPU capabilities
     TRACELOG(RL_LOG_INFO, "GL: OpenGL capabilities:");
     GLint capability = 0;
@@ -2666,8 +2664,9 @@ void rlLoadExtensions(void *loader)
     TRACELOG(RL_LOG_INFO, "    GL_MAX_VERTEX_ATTRIB_BINDINGS: %i", capability);
     glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &capability);
     TRACELOG(RL_LOG_INFO, "    GL_MAX_UNIFORM_LOCATIONS: %i", capability);
-#endif  // GRAPHICS_API_OPENGL_43
-#else   // RLGL_SHOW_GL_DETAILS_INFO
+#endif
+
+#else   // !RLGL_SHOW_GL_DETAILS_INFO
 
     // Show some basic info about GL supported features
     if (RLGL.ExtSupported.vao) TRACELOG(RL_LOG_INFO, "GL: VAO extension detected, VAO functions loaded successfully");
@@ -2681,9 +2680,9 @@ void rlLoadExtensions(void *loader)
     if (RLGL.ExtSupported.texCompASTC) TRACELOG(RL_LOG_INFO, "GL: ASTC compressed textures supported");
     if (RLGL.ExtSupported.computeShader) TRACELOG(RL_LOG_INFO, "GL: Compute shaders supported");
     if (RLGL.ExtSupported.ssbo) TRACELOG(RL_LOG_INFO, "GL: Shader storage buffer objects supported");
-#endif  // RLGL_SHOW_GL_DETAILS_INFO
+#endif
 
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
 }
 
 // Get OpenGL procedure address
@@ -3293,7 +3292,7 @@ unsigned int rlLoadTexture(const void *data, int width, int height, int format, 
         return id;
     }
 #endif
-#endif  // GRAPHICS_API_OPENGL_11
+#endif // GRAPHICS_API_OPENGL_11
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -4335,20 +4334,18 @@ unsigned int rlLoadShaderProgram(unsigned int vShaderId, unsigned int fShaderId)
     glAttachShader(programId, vShaderId);
     glAttachShader(programId, fShaderId);
 
-    // NOTE: Default attribute shader locations must be Bound before linking
+    // Default attribute shader locations must be bound before linking
+    // NOTE: There is no problem with binding a generic attribute index to an attribute variable name
+    // that is never used; if some attrib name is no found on the shader, it locations becomes -1
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_POSITION, RL_DEFAULT_SHADER_ATTRIB_NAME_POSITION);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD, RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_NORMAL, RL_DEFAULT_SHADER_ATTRIB_NAME_NORMAL);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_COLOR, RL_DEFAULT_SHADER_ATTRIB_NAME_COLOR);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_TANGENT, RL_DEFAULT_SHADER_ATTRIB_NAME_TANGENT);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD2, RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD2);
-    glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORMS, RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORMS);
-#ifdef SUPPORT_GPU_SKINNING
+    glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_INSTANCETRANSFORM, RL_DEFAULT_SHADER_ATTRIB_NAME_INSTANCETRANSFORM);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEINDICES, RL_DEFAULT_SHADER_ATTRIB_NAME_BONEINDICES);
     glBindAttribLocation(programId, RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS, RL_DEFAULT_SHADER_ATTRIB_NAME_BONEWEIGHTS);
-#endif
-
-    // NOTE: If some attrib name is no found on the shader, it locations becomes -1
 
     glLinkProgram(programId);
 
@@ -5113,7 +5110,7 @@ static void rlUnloadShaderDefault(void)
     TRACELOG(RL_LOG_INFO, "SHADER: [ID %i] Default shader unloaded successfully", RLGL.State.defaultShaderId);
 }
 
-#if defined(RLGL_SHOW_GL_DETAILS_INFO)
+#if RLGL_SHOW_GL_DETAILS_INFO
 // Get compressed format official GL identifier name
 static const char *rlGetCompressedFormatName(int format)
 {
@@ -5187,9 +5184,9 @@ static const char *rlGetCompressedFormatName(int format)
         default: return "GL_COMPRESSED_UNKNOWN"; break;
     }
 }
-#endif  // RLGL_SHOW_GL_DETAILS_INFO
+#endif
 
-#endif  // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
+#endif // GRAPHICS_API_OPENGL_33 || GRAPHICS_API_OPENGL_ES2
 
 // Get pixel data size in bytes (image or texture)
 // NOTE: Size depends on pixel format
@@ -5392,4 +5389,4 @@ static Matrix rlMatrixInvert(Matrix mat)
 }
 #endif
 
-#endif  // RLGL_IMPLEMENTATION
+#endif // RLGL_IMPLEMENTATION
