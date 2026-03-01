@@ -47,8 +47,8 @@ pub fn main() anyerror!void {
     var boneSocketIndex: [BONE_SOCKETS]usize = undefined;
 
     // search bones for sockets
-    for (0..@as(usize, @intCast(characterModel.boneCount))) |i| {
-        const boneName: [:0]const u8 = @ptrCast(&characterModel.bones[i].name);
+    for (0..@as(usize, @intCast(characterModel.skeleton.boneCount))) |i| {
+        const boneName: [:0]const u8 = @ptrCast(&characterModel.skeleton.bones[i].name);
         if (rl.textIsEqual(boneName, "socket_hat")) {
             boneSocketIndex[BONE_SOCKET_HAT] = i;
             continue;
@@ -96,8 +96,8 @@ pub fn main() anyerror!void {
 
         // Update model animation
         const anim = modelAnimations[animIndex];
-        animCurrentFrame = @mod(animCurrentFrame + 1, anim.frameCount);
-        rl.updateModelAnimation(characterModel, anim, animCurrentFrame);
+        animCurrentFrame = @mod(animCurrentFrame + 1, anim.keyframeCount);
+        rl.updateModelAnimation(characterModel, anim, @floatFromInt(animCurrentFrame));
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -113,15 +113,15 @@ pub fn main() anyerror!void {
                 // Draw character
                 const characterRotate: rl.Quaternion = rl.math.quaternionFromAxisAngle(.{ .x = 0.0, .y = 1.0, .z = 0.0 }, angle * std.math.rad_per_deg);
                 characterModel.transform = rl.math.matrixMultiply(rl.math.quaternionToMatrix(characterRotate), rl.math.matrixTranslate(position.x, position.y, position.z));
-                rl.updateModelAnimation(characterModel, anim, animCurrentFrame);
+                rl.updateModelAnimation(characterModel, anim, @floatFromInt(animCurrentFrame));
                 rl.drawMesh(characterModel.meshes[0], characterModel.materials[1], characterModel.transform);
 
                 // Draw equipments (hat, sword, shield)
                 for (0..BONE_SOCKETS) |i| {
                     if (!showEquip[i]) continue;
 
-                    const transform = &anim.framePoses[@intCast(animCurrentFrame)][boneSocketIndex[i]];
-                    const inRotation = characterModel.bindPose[boneSocketIndex[i]].rotation;
+                    const transform = &anim.keyframePoses[@intCast(animCurrentFrame)][boneSocketIndex[i]];
+                    const inRotation = characterModel.skeleton.bindPose[boneSocketIndex[i]].rotation;
                     const outRotation = transform.rotation;
 
                     // Calculate socket rotation (angle between bone in initial pose and same bone in current animation frame)
