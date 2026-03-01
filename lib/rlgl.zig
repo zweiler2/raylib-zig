@@ -703,7 +703,7 @@ pub fn rlLoadExtensions(loader: *anyopaque) void {
 }
 
 /// Get OpenGL procedure address
-pub fn rlGetProcAddress(procName: [:0]const u8) *anyopaque {
+pub fn rlGetProcAddress(procName: [:0]const u8) ?*anyopaque {
     return cdef.rlGetProcAddress(@as([*c]const u8, @ptrCast(procName)));
 }
 

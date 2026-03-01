@@ -356,6 +356,8 @@ def parse_header(header_name: str, output_file: str, ext_file: str, prefix: str,
             return_type = "GamepadButton"
         elif func_name == "GetGestureDetected":
             return_type = "Gesture"
+        elif func_name == "rlGetProcAddress":
+            return_type = "?*anyopaque"
 
         zig_c_arguments = []
         zig_arguments = []
