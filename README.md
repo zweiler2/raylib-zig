@@ -109,11 +109,15 @@ const raylib_dep = b.dependency("raylib_zig", .{
 ### Defining feature macros
 
 raylib lets the user enable and disable options for different features, loading different file formats for images,
-fonts, 3D models and audio, linkage variants. You can specify these options for your raylib-zig build by defining the
-corresponding C macro before you link with it, e.g.:
+fonts, 3D models and audio, linkage variants. You can specify these options for your raylib-zig build by passing the
+corresponding C macro(s) to the raylib-zig dependency like so
 
 ```zig
-raylib_artifact.root_module.addCMacro("SUPPORT_FILEFORMAT_JPG", "");
+const raylib_dep = b.dependency("raylib_zig", .{
+    .target = target,
+    .optimize = optimize,
+    .config = "-DSUPPORT_TRACELOG=1 -DSUPPORT_FILEFORMAT_JPG=1",
+});
 ```
 
 ## Exporting for web
