@@ -424,6 +424,7 @@ pub extern "c" fn DrawTextCodepoints(font: rl.Font, codepoints: [*c]const c_int,
 pub extern "c" fn SetTextLineSpacing(spacing: c_int) void;
 pub extern "c" fn MeasureText(text: [*c]const u8, fontSize: c_int) c_int;
 pub extern "c" fn MeasureTextEx(font: rl.Font, text: [*c]const u8, fontSize: f32, spacing: f32) rl.Vector2;
+pub extern "c" fn MeasureTextCodepoints(font: rl.Font, codepoints: [*c]const c_int, length: c_int, fontSize: f32, spacing: f32) rl.Vector2;
 pub extern "c" fn GetGlyphIndex(font: rl.Font, codepoint: c_int) c_int;
 pub extern "c" fn GetGlyphInfo(font: rl.Font, codepoint: c_int) rl.GlyphInfo;
 pub extern "c" fn GetGlyphAtlasRec(font: rl.Font, codepoint: c_int) rl.Rectangle;

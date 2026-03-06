@@ -447,6 +447,10 @@ pub fn matrixMultiply(left: Matrix, right: Matrix) Matrix {
     return cdef.MatrixMultiply(left, right);
 }
 
+pub fn matrixMultiplyValue(left: Matrix, value: f32) Matrix {
+    return cdef.MatrixMultiplyValue(left, value);
+}
+
 pub fn matrixTranslate(x: f32, y: f32, z: f32) Matrix {
     return cdef.MatrixTranslate(x, y, z);
 }

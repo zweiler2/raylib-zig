@@ -5309,6 +5309,11 @@ pub fn measureTextEx(font: Font, text: [:0]const u8, fontSize: f32, spacing: f32
     return cdef.MeasureTextEx(font, @as([*c]const u8, @ptrCast(text)), fontSize, spacing);
 }
 
+/// Measure string size for an existing array of codepoints for Font
+pub fn measureTextCodepoints(font: Font, codepoints: []const c_int, length: i32, fontSize: f32, spacing: f32) Vector2 {
+    return cdef.MeasureTextCodepoints(font, @as([*c]const c_int, @ptrCast(codepoints)), @as(c_int, length), fontSize, spacing);
+}
+
 /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
 pub fn getGlyphIndex(font: Font, codepoint: i32) i32 {
     return @as(i32, cdef.GetGlyphIndex(font, @as(c_int, codepoint)));

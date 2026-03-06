@@ -109,6 +109,7 @@ pub extern "c" fn MatrixIdentity() rl.Matrix;
 pub extern "c" fn MatrixAdd(left: rl.Matrix, right: rl.Matrix) rl.Matrix;
 pub extern "c" fn MatrixSubtract(left: rl.Matrix, right: rl.Matrix) rl.Matrix;
 pub extern "c" fn MatrixMultiply(left: rl.Matrix, right: rl.Matrix) rl.Matrix;
+pub extern "c" fn MatrixMultiplyValue(left: rl.Matrix, value: f32) rl.Matrix;
 pub extern "c" fn MatrixTranslate(x: f32, y: f32, z: f32) rl.Matrix;
 pub extern "c" fn MatrixRotate(axis: rl.Vector3, angle: f32) rl.Matrix;
 pub extern "c" fn MatrixRotateX(angle: f32) rl.Matrix;
